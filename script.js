@@ -1,8 +1,29 @@
-// IA DESLUMBRANTE - SISTEMA ULTRA OPTIMIZADO
-// Performance-first approach con animaciones fluidas
+/**
+ * IA DESLUMBRANTE - SISTEMA ULTRA OPTIMIZADO
+ * Performance-first approach con animaciones fluidas
+ */
 
-(() => {
+'use strict';
+
+// Objeto principal de la aplicación
+const APP = (() => {
     'use strict';
+    
+    // Configuración global
+    const config = {
+        isMobile: window.innerWidth <= 768 || /Mobi|Android/i.test(navigator.userAgent),
+        reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+        debug: false
+    };
+    
+    // Estado de la aplicación
+    const state = {
+        isInitialized: false,
+        scrollY: 0,
+        mouseX: 0,
+        mouseY: 0,
+        cursorVisible: true
+    };
     
     const APP = {
         config: {
@@ -226,32 +247,76 @@
         
         enableAdvancedSmooth() {
             let scrollHeight = document.body.scrollHeight;
+            let isScrolling = false;
+            let animationFrameId = null;
+            let velocity = 0;
+            let lastTime = 0;
             
+            // Update scroll height on resize with debounce
             const updateScrollHeight = Utils.throttle(() => {
                 scrollHeight = document.body.scrollHeight;
+                this.target = Utils.clamp(this.target, 0, scrollHeight - window.innerHeight);
             }, 100);
             
-            window.addEventListener('resize', updateScrollHeight);
-            
-            const smoothUpdate = () => {
-                this.current = Utils.lerp(this.current, this.target, this.ease);
+            // Smooth update function with momentum
+            const smoothUpdate = (timestamp) => {
+                if (!lastTime) lastTime = timestamp;
+                const deltaTime = timestamp - lastTime;
+                lastTime = timestamp;
                 
-                if (Math.abs(this.target - this.current) > 0.1) {
-                    window.scrollTo(0, this.current);
-                    requestAnimationFrame(smoothUpdate);
+                // Apply momentum
+                velocity += (this.target - this.current) * 0.1;
+                velocity *= 0.85; // Friction
+                
+                this.current += velocity;
+                
+                // Apply easing
+                this.current = Utils.lerp(this.current, this.target, 0.1);
+                
+                // Apply scroll
+                window.scrollTo(0, this.current);
+                
+                // Continue animation if needed
+                if (Math.abs(velocity) > 0.1 || Math.abs(this.target - this.current) > 0.5) {
+                    animationFrameId = requestAnimationFrame(smoothUpdate);
+                } else {
+                    isScrolling = false;
+                    this.current = window.scrollY;
+                    this.target = this.current;
                 }
             };
             
-            // Wheel handler optimizado
-            const handleWheel = Utils.throttle((e) => {
+            // Handle wheel events
+            const handleWheel = (e) => {
+                if (e.ctrlKey) return; // Allow zooming
+                
                 e.preventDefault();
+                
+                // Apply momentum
+                velocity += e.deltaY * 0.2;
                 this.target += e.deltaY * 0.8;
                 this.target = Utils.clamp(this.target, 0, scrollHeight - window.innerHeight);
                 
-                smoothUpdate();
-            }, 16);
+                // Start animation if not already running
+                if (!isScrolling) {
+                    isScrolling = true;
+                    lastTime = 0;
+                    animationFrameId = requestAnimationFrame(smoothUpdate);
+                }
+            };
             
+            // Add event listeners
+            window.addEventListener('resize', updateScrollHeight, { passive: true });
             window.addEventListener('wheel', handleWheel, { passive: false });
+            
+            // Cleanup function
+            this.cleanupSmoothScroll = () => {
+                window.removeEventListener('resize', updateScrollHeight);
+                window.removeEventListener('wheel', handleWheel);
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                }
+            };
         },
         
         bindEvents() {
@@ -287,26 +352,58 @@
     
     const AnimationSystem = {
         timelines: {},
+        animations: [],
         
         init() {
+            // Check for reduced motion preference
+            if (APP.config.reducedMotion) {
+                this.initReducedMotion();
+                return;
+            }
+            
+            // Check if GSAP is available
             if (typeof gsap === 'undefined') {
                 console.warn('GSAP not loaded, using fallback animations');
                 this.initFallbackAnimations();
                 return;
             }
             
-            gsap.registerPlugin(ScrollTrigger);
-            this.setupGSAPAnimations();
+            try {
+                gsap.registerPlugin(ScrollTrigger);
+                this.setupGSAPAnimations();
+                this.setupPerformanceMonitoring();
+            } catch (error) {
+                console.error('Error initializing GSAP:', error);
+                this.initFallbackAnimations();
+            }
         },
         
         setupGSAPAnimations() {
-            // Configuración global optimizada
-            gsap.config({ nullTargetWarn: false });
-            gsap.defaults({ ease: "power2.out", duration: 0.8 });
+            // Optimized global configuration
+            gsap.config({
+                nullTargetWarn: false,
+                autoSleep: 60, // Better performance for inactive animations
+                force3D: 'auto', // Let GSAP decide when to use 3D transforms
+                autoKernelSize: 10 // Optimize for performance
+            });
             
+            // Set default animation properties for better performance
+            gsap.defaults({
+                ease: "power2.out",
+                duration: 0.8,
+                overwrite: 'auto',
+                force3D: true // Use 3D transforms for better performance
+            });
+            
+            // Setup animations with priority
             this.animateHero();
-            this.animateSections();
-            this.animateElements();
+            
+            // Defer less critical animations
+            requestIdleCallback(() => {
+                this.animateSections();
+                this.animateElements();
+                this.animateFlowParticles();
+            });
         },
         
         animateHero() {
@@ -317,23 +414,36 @@
             const title = hero.querySelector('h1');
             const subtitle = hero.querySelector('p');
             
-            // Animación continua del orbe
+            // Optimize hero animations with will-change
             if (orb) {
-                gsap.to(orb, {
-                    rotation: 360,
-                    duration: 20,
-                    repeat: -1,
-                    ease: "none"
-                });
+                orb.style.willChange = 'transform, opacity';
                 
-                // Efecto de pulsación
-                gsap.to(orb, {
-                    scale: 1.1,
-                    duration: 2,
+                // Use a single timeline for better performance
+                const heroTimeline = gsap.timeline({ defaults: { ease: 'power2.inOut' } });
+                
+                // Continuous rotation with better performance
+                heroTimeline.to(orb, {
+                    rotation: 360,
+                    duration: 40, // Slower rotation is more performant
+                    repeat: -1,
+                    ease: 'none',
+                    transformOrigin: 'center',
+                    force3D: true
+                }, 0);
+                
+                // Pulsation effect with better performance
+                heroTimeline.to(orb, {
+                    scale: 1.05, // Smaller scale difference is more performant
+                    duration: 3, // Slower animation is more performant
                     repeat: -1,
                     yoyo: true,
-                    ease: "sine.inOut"
-                });
+                    ease: 'sine.inOut',
+                    force3D: true
+                }, 0);
+                
+                // Store the timeline for later cleanup
+                this.timelines.hero = heroTimeline;
+                this.animations.push(heroTimeline);
             }
             
             // Parallax del hero
@@ -378,28 +488,356 @@
             });
         },
         
-        animateElements() {
-            // Nodos neuronales
-            const nnNodes = document.querySelectorAll('.nn-node');
-            nnNodes.forEach((node, index) => {
-                gsap.to(node, {
-                    scale: 1.2,
-                    duration: 1.5 + index * 0.2,
-                    repeat: -1,
-                    yoyo: true,
-                    ease: "sine.inOut",
-                    delay: index * 0.1
-                });
+        // Initialize reduced motion mode
+        initReducedMotion() {
+            console.log('Reduced motion mode activated');
+            document.documentElement.classList.add('reduced-motion');
+            this.initFallbackAnimations();
+        },
+        
+        // Setup performance monitoring
+        setupPerformanceMonitoring() {
+            if (window.performance) {
+                // Monitor frame rate
+                let lastTime = performance.now();
+                let frameCount = 0;
+                
+                const checkFPS = () => {
+                    frameCount++;
+                    const now = performance.now();
+                    const delta = now - lastTime;
+                    
+                    if (delta >= 1000) { // Log FPS every second
+                        const fps = Math.round((frameCount * 1000) / delta);
+                        if (fps < 45) {
+                            console.warn(`Low FPS: ${fps}. Consider reducing animation load.`);
+                        }
+                        frameCount = 0;
+                        lastTime = now;
+                    }
+                    
+                    requestAnimationFrame(checkFPS);
+                };
+                
+                requestAnimationFrame(checkFPS);
+            }
+        },
+        
+        // Fallback animations for when GSAP is not available
+        initFallbackAnimations() {
+            console.log('Initializing fallback animations');
+            
+            // Simple fade-in for sections
+            const sections = document.querySelectorAll('section, header');
+            sections.forEach(section => {
+                section.style.opacity = '1';
+                section.style.transition = 'opacity 0.5s ease-in-out';
             });
             
-            // Partículas de flujo optimizadas
-            this.animateFlowParticles();
+            // Simple pulse animation for interactive elements
+            const interactiveElements = document.querySelectorAll('.interactive');
+            interactiveElements.forEach(el => {
+                el.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+                el.addEventListener('mouseenter', () => {
+                    el.style.transform = 'scale(1.05)';
+                });
+                el.addEventListener('mouseleave', () => {
+                    el.style.transform = 'scale(1)';
+                });
+            });
+        },
+        
+        // Animate neural network nodes and other interactive elements
+        // Animate flow particles with optimized performance
+        animateFlowParticles() {
+            const containers = document.querySelectorAll('.data-flow-animation');
+            if (!containers.length) return;
             
-            // Fragmentos de cierre
+            // Create a master timeline for flow particles
+            const flowTl = gsap.timeline({
+                defaults: {
+                    ease: 'none',
+                    force3D: true
+                },
+                onComplete: () => {
+                    // Clean up will-change after animations complete
+                    containers.forEach(container => {
+                        container.style.willChange = 'auto';
+                    });
+                }
+            });
+            
+            containers.forEach((container, containerIndex) => {
+                // Optimize container
+                container.style.willChange = 'transform, opacity';
+                container.style.transform = 'translateZ(0)';
+                
+                // Clear existing particles to avoid duplicates
+                container.innerHTML = '';
+                
+                // Create new particles with optimized count based on container size
+                const rect = container.getBoundingClientRect();
+                const area = rect.width * rect.height;
+                const particleCount = Math.min(20, Math.max(5, Math.floor(area / 5000))); // 1 particle per 5000px², min 5, max 20
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'flow-particle gpu-accelerated';
+                    
+                    // Random properties with better distribution
+                    const size = 1 + Math.random() * 3; // Smaller particles for better performance
+                    const posX = Math.random() * 100;
+                    const posY = Math.random() * 100;
+                    const duration = 4 + Math.random() * 3; // Slower movement
+                    const delay = Math.random() * -5;
+                    const distance = 20 + Math.random() * 30; // Reduced travel distance
+                    
+                    // Apply styles with hardware acceleration
+                    Object.assign(particle.style, {
+                        position: 'absolute',
+                        width: `${size}px`,
+                        height: `${size}px`,
+                        background: `hsl(${180 + Math.random() * 60}, 80%, 60%)`,
+                        borderRadius: '50%',
+                        left: `${posX}%`,
+                        top: `${posY}%`,
+                        willChange: 'transform, opacity',
+                        pointerEvents: 'none',
+                        opacity: 0.6,
+                        filter: 'blur(0.5px)',
+                        transform: 'translateZ(0)',
+                        zIndex: 1
+                    });
+                    
+                    container.appendChild(particle);
+                    
+                    // Animate particle with optimized properties
+                    const angle = Math.random() * Math.PI * 2;
+                    const x = Math.cos(angle) * distance;
+                    const y = Math.sin(angle) * distance;
+                    
+                    flowTl.to(particle, {
+                        x: `+=${x}%`,
+                        y: `+=${y}%`,
+                        opacity: 0.3,
+                        duration: duration,
+                        delay: delay,
+                        ease: 'sine.inOut',
+                        repeat: -1,
+                        yoyo: true,
+                        force3D: true
+                    }, containerIndex * 0.1);
+                }
+            });
+            
+            // Store the timeline for cleanup
+            this.timelines.flowParticles = flowTl;
+            this.animations.push(flowTl);
+            
+            return flowTl;
+        },
+        
+        // Initialize all animations
+        init() {
+            try {
+                // Check for reduced motion preference
+                if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    this.initReducedMotion();
+                    return;
+                }
+                
+                // Check if GSAP is available
+                if (typeof gsap === 'undefined') {
+                    console.warn('GSAP not loaded, using fallback animations');
+                    this.initFallbackAnimations();
+                    return;
+                }
+                
+                try {
+                    gsap.registerPlugin(ScrollTrigger);
+                    this.setupGSAPAnimations();
+                    this.setupPerformanceMonitoring();
+                } catch (error) {
+                    console.error('Error initializing GSAP:', error);
+                    this.initFallbackAnimations();
+                }
+                
+                console.log('AnimationSystem initialized successfully');
+                
+            } catch (error) {
+                console.error('Error initializing AnimationSystem:', error);
+                // Fallback to reduced motion on error
+                this.initFallbackAnimations();
+            }
+        },
+        
+        // Setup GSAP with performance optimizations
+        setupGSAP() {
+            // Configure GSAP for better performance
+            gsap.config({
+                autoSleep: 60, // Auto-sleep after 60fps
+                force3D: true, // Force 3D transforms
+                nullTargetWarn: false, // Disable null target warnings
+                autoKernelSize: 1000, // Optimize animation batching
+                autoRevert: false // Better performance for non-reversing animations
+            });
+            
+            // Register plugins if needed
+            if (typeof ScrollTrigger !== 'undefined') {
+                gsap.registerPlugin(ScrollTrigger);
+                
+                // Configure ScrollTrigger for better performance
+                ScrollTrigger.config({
+                    autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load',
+                    ignoreMobileResize: true,
+                    syncCallbacks: true
+                });
+            }
+        },
+        
+        // Animate neural network nodes and connections
+        animateElements() {
+            try {
+                // Neural network nodes with optimized animations
+                const nnContainers = document.querySelectorAll('.neural-network-animation');
+                if (!nnContainers.length) return;
+                
+                // Create a master timeline for better control
+                const masterTl = gsap.timeline({
+                    defaults: { 
+                        ease: 'power2.inOut',
+                        force3D: true
+                    },
+                    onComplete: () => {
+                        // Clean up will-change after animations complete
+                        nnContainers.forEach(container => {
+                            container.style.willChange = 'auto';
+                        });
+                    }
+                });
+                
+                nnContainers.forEach((container, containerIndex) => {
+                    // Optimize container
+                    container.style.willChange = 'transform, opacity';
+                    container.style.transform = 'translateZ(0)';
+                    
+                    // Animate nodes with staggered delay
+                    const nodes = container.querySelectorAll('.nn-node');
+                    nodes.forEach((node, nodeIndex) => {
+                        // Optimize with will-change and transform
+                        node.style.willChange = 'transform, opacity';
+                        node.style.transform = 'translateZ(0)';
+                        
+                        // Add to master timeline with staggered start
+                        masterTl.to(node, {
+                            scale: 1.15,
+                            duration: 2,
+                            repeat: -1,
+                            yoyo: true,
+                            ease: 'sine.inOut',
+                            delay: nodeIndex * 0.1
+                        }, containerIndex * 0.1);
+                    });
+                    
+                    // Animate connections
+                    const connections = container.querySelectorAll('.nn-connections-1, .nn-connections-2');
+                    connections.forEach((conn, connIndex) => {
+                        conn.style.willChange = 'opacity';
+                        masterTl.to(conn, {
+                            opacity: 0.7,
+                            duration: 2,
+                            repeat: -1,
+                            yoyo: true,
+                            ease: 'sine.inOut',
+                            delay: connIndex * 0.05
+                        }, containerIndex * 0.1);
+                    });
+                });
+                
+                // Store the master timeline for potential cleanup
+                this.timelines.neuralNetwork = masterTl;
+                this.animations.push(masterTl);
+                
+                // Setup hover effects for interactive elements
+                this.setupHoverEffects();
+                
+                return masterTl;
+                
+            } catch (error) {
+                console.error('Error in animateElements:', error);
+                // Fallback to simple animations on error
+                this.initFallbackAnimations();
+            }
+        },
+        
+        // Setup hover effects for interactive elements
+        setupHoverEffects() {
+            const interactiveElements = document.querySelectorAll('.interactive');
+            
+            interactiveElements.forEach(el => {
+                // Only set up if not already done
+                if (el.dataset.hoverInitialized) return;
+                el.dataset.hoverInitialized = 'true';
+                
+                el.style.willChange = 'transform, opacity';
+                el.style.transform = 'translateZ(0)';
+                
+                // Store the animation for cleanup
+                const hoverTl = gsap.timeline({ paused: true });
+                hoverTl.to(el, {
+                    scale: 1.05,
+                    duration: 0.3,
+                    ease: 'power2.out'
+                });
+                
+                // Store for cleanup
+                this.hoverAnimations.set(el, hoverTl);
+                
+                // Add event listeners
+                el.addEventListener('mouseenter', () => hoverTl.play());
+                el.addEventListener('mouseleave', () => hoverTl.reverse());
+                el.addEventListener('touchstart', () => hoverTl.play());
+                el.addEventListener('touchend', () => hoverTl.reverse());
+            });
+        },
+        
+        // Clean up all animations
+        cleanup() {
+            // Kill all GSAP animations
+            this.animations.forEach(anim => {
+                if (anim && anim.kill) anim.kill();
+            });
+            
+            // Clear all timelines
+            Object.values(this.timelines).forEach(tl => {
+                if (tl && tl.kill) tl.kill();
+            });
+            
+            // Clean up hover animations and event listeners
+            this.hoverAnimations.forEach((tl, el) => {
+                if (tl && tl.kill) tl.kill();
+                el.removeEventListener('mouseenter', el._mouseEnterHandler);
+                el.removeEventListener('mouseleave', el._mouseLeaveHandler);
+                el.removeEventListener('touchstart', el._touchStartHandler);
+                el.removeEventListener('touchend', el._touchEndHandler);
+                delete el.dataset.hoverInitialized;
+            });
+            
+            this.hoverAnimations.clear();
+            this.animations = [];
+            this.timelines = {};
+            
+            // Reset will-change properties
+            document.querySelectorAll('[style*="will-change"]').forEach(el => {
+                el.style.willChange = 'auto';
+            });
+            
+            // Inicializar partículas de flujo
+            this.animateFlowParticles();
             this.animateClosingFragments();
         },
         
-        animateFlowParticles() {
+        animateFlowParticles: function() {
             const particles = document.querySelectorAll('.flow-particle');
             const colors = ['#00f6ff', '#ff00e0', '#00ff88', '#ff4400'];
             
@@ -477,58 +915,156 @@
             // Animaciones CSS puras como fallback
             const style = document.createElement('style');
             style.textContent = `
-                .hero-orb { animation: rotate 20s linear infinite; }
-                .nn-node { animation: pulse 2s ease-in-out infinite; }
-                .flow-particle { animation: float 4s ease-in-out infinite; }
+                /* Fallback animations */
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
                 
-                @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-                @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
-                @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
+                @keyframes float {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(-10px); }
+                }
+                
+                .fallback-animate {
+                    animation: fadeIn 0.8s ease-out forwards;
+                }
+                
+                .fallback-float {
+                    animation: float 3s ease-in-out infinite;
+                }
             `;
+            
             document.head.appendChild(style);
+            
+            // Aplicar animaciones de fallback a los elementos
+            document.querySelectorAll('section, header, .interactive').forEach(el => {
+                el.classList.add('fallback-animate');
+            });
+            
+            console.log('Fallback animations initialized');
         }
     };
-
+    
     // ========================================
-    // MAIN INITIALIZATION
+    // INICIALIZACIÓN DE LA APLICACIÓN
     // ========================================
     
-    const initApp = () => {
-        if (APP.state.isInitialized) return;
+    const init = () => {
+        if (state.isInitialized) return;
         
-        console.log('🚀 IA Deslumbrante - Ultra Optimized System Starting...');
+        console.log('🚀 Iniciando aplicación...');
         
-        // Optimizar el rendering inicial
-        document.body.style.visibility = 'visible';
-        document.body.style.opacity = '1';
-        
-        // Inicializar sistemas
-        CursorSystem.init();
-        ScrollSystem.init();
-        AnimationSystem.init();
-        
-        // Performance monitoring
-        if (APP.config.debug) {
-            const stats = new Stats();
-            document.body.appendChild(stats.dom);
+        try {
+            // Inicializar sistemas
+            CursorSystem.init();
+            ScrollSystem.init();
+            
+            // Inicializar animaciones si GSAP está disponible
+            if (typeof gsap !== 'undefined') {
+                try {
+                    gsap.registerPlugin(ScrollTrigger);
+                    AnimationSystem.init();
+                } catch (error) {
+                    console.error('Error al inicializar GSAP:', error);
+                    AnimationSystem.initFallbackAnimations();
+                }
+            } else {
+                console.warn('GSAP no está disponible, usando animaciones alternativas');
+                AnimationSystem.initFallbackAnimations();
+            }
+            
+            state.isInitialized = true;
+            console.log('✅ Aplicación inicializada');
+            
+            // Optimización de rendimiento
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(() => {
+                    console.log('Optimizaciones de rendimiento aplicadas');
+                });
+            }
+            
+            // Inicializar service worker en producción
+            if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registrado correctamente');
+                    })
+                    .catch(error => {
+                        console.error('Error al registrar ServiceWorker:', error);
+                    });
+            }
+            
+        } catch (error) {
+            console.error('Error al inicializar la aplicación:', error);
         }
-        
-        APP.state.isInitialized = true;
-        console.log('✅ Sistema ultra optimizado activado');
     };
     
-    // Inicializar cuando esté listo
+    // Limpiar al cerrar la página
+    window.addEventListener('beforeunload', () => {
+        if (AnimationSystem && typeof AnimationSystem.cleanup === 'function') {
+            AnimationSystem.cleanup();
+        }
+    });
+    
+    // Exponer API pública
+    const publicAPI = {
+        init,
+        config,
+        state,
+        utils: Utils,
+        CursorSystem,
+        ScrollSystem,
+        AnimationSystem
+    };
+    
+    // Hacer que la API esté disponible globalmente
+    window.APP = publicAPI;
+    
+    // Inicializar cuando el DOM esté listo
+    const startApp = () => {
+        // Cargar GSAP dinámicamente si es necesario
+        if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+            console.log('Cargando GSAP dinámicamente...');
+            const gsapScript = document.createElement('script');
+            gsapScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js';
+            
+            gsapScript.onload = () => {
+                const stScript = document.createElement('script');
+                stScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js';
+                stScript.onload = () => {
+                    gsap.registerPlugin(ScrollTrigger);
+                    init();
+                };
+                document.head.appendChild(stScript);
+            };
+            
+            document.head.appendChild(gsapScript);
+        } else {
+            if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+                gsap.registerPlugin(ScrollTrigger);
+            }
+            init();
+        }
+    };
+    
+    // Iniciar la aplicación cuando el DOM esté listo
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initApp);
+        document.addEventListener('DOMContentLoaded', startApp);
     } else {
-        initApp();
+        // Si el DOM ya está listo, inicializar en el siguiente ciclo de eventos
+        setTimeout(startApp, 0);
     }
     
-    // Refresh en resize
-    window.addEventListener('resize', Utils.throttle(() => {
+    // Manejar el evento de redimensionamiento
+    const handleResize = Utils.throttle(() => {
         if (typeof ScrollTrigger !== 'undefined') {
             ScrollTrigger.refresh();
         }
-    }, 250));
+    }, 250);
+
+    window.addEventListener('resize', handleResize);
     
+    // Retornar la API pública
+    return publicAPI;
 })();
