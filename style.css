@@ -32,6 +32,14 @@ html {
     width: 100%;
     overflow-x: hidden;
     scroll-behavior: smooth;
+    /* Ocultar scrollbar para Chrome, Safari y Opera */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+/* Ocultar scrollbar para Chrome, Safari y Opera */
+html::-webkit-scrollbar {
+    display: none;
 }
 
 body {
@@ -43,6 +51,18 @@ body {
     overflow-x: hidden;
     width: 100%;
     position: relative;
+    /* Asegurar que no haya scroll horizontal */
+    max-width: 100vw;
+    /* Ocultar scrollbar */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+    /* Asegurar que el contenido no desborde */
+    box-sizing: border-box;
+}
+
+/* Ocultar scrollbar para Chrome, Safari y Opera */
+body::-webkit-scrollbar {
+    display: none;
 }
 
 /* Cursor personalizado solo para desktop */
@@ -132,7 +152,10 @@ header, section {
     transition: all 0.3s ease;
     width: 100%;
     max-width: 100%;
-    overflow-x: hidden;
+    /* Asegurar que no haya desbordamiento */
+    overflow: hidden;
+    /* Asegurar que el padding no cause desbordamiento */
+    box-sizing: border-box;
 }
 
 header:hover, section:hover {
