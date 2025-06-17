@@ -3,78 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="IA Deslumbrante - Una experiencia visual futurista con animaciones ultra fluidas">
+    
+    <!-- Optimización de carga -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    
+    <!-- Critical CSS inline para First Paint -->
+    <style>
+        body{opacity:0;transition:opacity 0.3s ease}
+        .loading{opacity:1}
+    </style>
+    
     <title>IA Deslumbrante</title>
+    
+    <!-- Stylesheet principal -->
     <link rel="stylesheet" href="style.css">
+    
+    <!-- Preload de recursos críticos -->
+    <link rel="modulepreload" href="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js">
 </head>
-<body>
+<body class="loading">
+    <!-- HERO SECTION -->
     <header id="hero">
         <div class="hero-orb-container">
-            <div class="hero-orb"></div>
+            <div class="hero-orb gpu-accelerated"></div>
         </div>
-        <h1>IA DESLUMBRANTE</h1>
-        <p>Una experiencia visual futurista.</p>
+        <h1 class="critical-content">IA DESLUMBRANTE</h1>
+        <p class="critical-content">Una experiencia visual futurista con animaciones ultra fluidas.</p>
     </header>
 
     <main>
-        <section id="concept1">
+        <!-- SECCIÓN REDES NEURONALES -->
+        <section id="concept1" class="fade-in-scroll">
             <h2>REDES NEURONALES</h2>
-            <div class="neural-network-animation">
+            <div class="neural-network-animation gpu-accelerated">
+                <!-- Capa de entrada -->
                 <div class="nn-layer">
-                    <div class="nn-node node-input"></div>
-                    <div class="nn-node node-input"></div>
-                    <div class="nn-node node-input"></div>
+                    <div class="nn-node node-input gpu-accelerated" aria-label="Nodo de entrada 1"></div>
+                    <div class="nn-node node-input gpu-accelerated" aria-label="Nodo de entrada 2"></div>
+                    <div class="nn-node node-input gpu-accelerated" aria-label="Nodo de entrada 3"></div>
                 </div>
-                <div class="nn-connections-1">
-                    <!-- Las conexiones se podrían hacer con pseudo-elementos o divs adicionales si es complejo -->
-                </div>
+                
+                <!-- Conexiones primera capa -->
+                <div class="nn-connections-1" aria-hidden="true"></div>
+                
+                <!-- Capa oculta -->
                 <div class="nn-layer">
-                    <div class="nn-node node-hidden"></div>
-                    <div class="nn-node node-hidden"></div>
+                    <div class="nn-node node-hidden gpu-accelerated" aria-label="Nodo oculto 1"></div>
+                    <div class="nn-node node-hidden gpu-accelerated" aria-label="Nodo oculto 2"></div>
+                    <div class="nn-node node-hidden gpu-accelerated" aria-label="Nodo oculto 3"></div>
+                    <div class="nn-node node-hidden gpu-accelerated" aria-label="Nodo oculto 4"></div>
                 </div>
-                <div class="nn-connections-2">
-                </div>
+                
+                <!-- Conexiones segunda capa -->
+                <div class="nn-connections-2" aria-hidden="true"></div>
+                
+                <!-- Capa de salida -->
                 <div class="nn-layer">
-                    <div class="nn-node node-output"></div>
+                    <div class="nn-node node-output gpu-accelerated" aria-label="Nodo de salida"></div>
                 </div>
             </div>
-            <p>Visualizando la complejidad del aprendizaje profundo con animaciones fluidas y vibrantes.</p>
+            <p>Visualización avanzada de redes neuronales profundas con arquitectura optimizada para máximo rendimiento y fluidez visual.</p>
         </section>
 
-        <section id="concept2">
+        <!-- SECCIÓN FLUJO DE DATOS -->
+        <section id="concept2" class="fade-in-scroll lazy-content">
             <h2>FLUJO DE DATOS INTELIGENTE</h2>
-            <div class="data-flow-animation">
-                <!-- Aquí generaremos dinámicamente las partículas/líneas con JS o las predefiniremos -->
-                <div class="flow-particle"></div>
-                <div class="flow-particle"></div>
-                <div class="flow-particle"></div>
-                <div class="flow-particle"></div>
-                <div class="flow-particle"></div>
-                <!-- Más partículas si es necesario -->
+            <div class="data-flow-animation gpu-accelerated" aria-label="Animación de flujo de datos">
+                <!-- Partículas generadas dinámicamente por JS -->
+                <div class="flow-particle gpu-accelerated" aria-hidden="true"></div>
+                <div class="flow-particle gpu-accelerated" aria-hidden="true"></div>
+                <div class="flow-particle gpu-accelerated" aria-hidden="true"></div>
+                <div class="flow-particle gpu-accelerated" aria-hidden="true"></div>
+                <div class="flow-particle gpu-accelerated" aria-hidden="true"></div>
+                <div class="flow-particle gpu-accelerated" aria-hidden="true"></div>
+                <div class="flow-particle gpu-accelerated" aria-hidden="true"></div>
+                <div class="flow-particle gpu-accelerated" aria-hidden="true"></div>
             </div>
-            <p>Observa cómo la información se transforma y genera conocimiento en tiempo real.</p>
+            <p>Observa cómo la información se transforma en tiempo real a través de algoritmos de inteligencia artificial, con visualizaciones fluidas y responsivas.</p>
         </section>
 
-        <section id="closing">
-            <h2>Innovación Continua</h2>
-            <div class="closing-animation-container">
-                <div class="closing-fragment"></div>
-                <div class="closing-fragment"></div>
-                <div class="closing-fragment"></div>
-                <div class="closing-fragment"></div>
-                <div class="closing-fragment"></div>
-                <!-- Puedes añadir más fragmentos si quieres una forma más compleja -->
+        <!-- SECCIÓN CIERRE -->
+        <section id="closing" class="fade-in-scroll lazy-content">
+            <h2>INNOVACIÓN CONTINUA</h2>
+            <div class="closing-animation-container gpu-accelerated" aria-label="Animación orbital de cierre">
+                <!-- Fragmentos orbitales -->
+                <div class="closing-fragment gpu-accelerated" aria-hidden="true"></div>
+                <div class="closing-fragment gpu-accelerated" aria-hidden="true"></div>
+                <div class="closing-fragment gpu-accelerated" aria-hidden="true"></div>
+                <div class="closing-fragment gpu-accelerated" aria-hidden="true"></div>
+                <div class="closing-fragment gpu-accelerated" aria-hidden="true"></div>
+                <div class="closing-fragment gpu-accelerated" aria-hidden="true"></div>
             </div>
-            <p>La inteligencia artificial redefine lo posible, día tras día.</p>
+            <p>La inteligencia artificial redefine constantemente los límites de lo posible, impulsando la innovación hacia nuevos horizontes tecnológicos.</p>
         </section>
     </main>
 
+    <!-- FOOTER -->
     <footer>
-       
+        <p>&copy; 2025 IA Deslumbrante. Desarrollado con tecnologías de vanguardia.</p>
     </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/MotionPathPlugin.min.js"></script>
-    <script src="script-optimized.js" defer></script>
+    <!-- Scripts optimizados con loading estratégico -->
+    <script>
+        // Critical loading management
+        document.body.classList.add('loading');
+        
+        // Performance observer para métricas
+        if ('PerformanceObserver' in window) {
+            const observer = new PerformanceObserver((list) => {
+                for (const entry of list.getEntries()) {
+                    if (entry.entryType === 'paint' && entry.name === 'first-contentful-paint') {
+                        console.log('🎨 First Contentful Paint:', entry.startTime.toFixed(2), 'ms');
+                    }
+                }
+            });
+            observer.observe({ entryTypes: ['paint'] });
+        }
+        
+        // Lazy loading de scripts pesados
+        function loadScripts() {
+            const scripts = [
+                'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/MotionPathPlugin.min.js'
+            ];
+            
+            let loaded = 0;
+            
+            scripts.forEach((src, index) => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.async = true;
+                script.onload = () => {
+                    loaded++;
+                    if (loaded === scripts.length) {
+                        // Cargar script principal cuando GSAP esté listo
+                        const mainScript = document.createElement('script');
+                        mainScript.src = 'script.js';
+                        mainScript.defer = true;
+                        document.head.appendChild(mainScript);
+                    }
+                };
+                script.onerror = () => {
+                    console.warn(`Failed to load script: ${src}`);
+                    // Fallback sin GSAP
+                    if (loaded === 0) {
+                        const fallbackScript = document.createElement('script');
+                        fallbackScript.src = 'script.js';
+                        fallbackScript.defer = true;
+                        document.head.appendChild(fallbackScript);
+                    }
+                };
+                document.head.appendChild(script);
+            });
+        }
+        
+        // Intersection Observer para lazy loading de secciones
+        function setupLazyLoading() {
+            const lazyElements = document.querySelectorAll('.fade-in-scroll');
+            
+            if ('IntersectionObserver' in window) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, {
+                    threshold: 0.1,
+                    rootMargin: '50px'
+                });
+                
+                lazyElements.forEach(el => observer.observe(el));
+            } else {
+                // Fallback para navegadores sin IntersectionObserver
+                lazyElements.forEach(el => el.classList.add('visible'));
+            }
+        }
+        
+        // Inicialización optimizada
+        function initApp() {
+            document.body.style.opacity = '1';
+            document.body.classList.remove('loading');
+            
+            setupLazyLoading();
+            
+            // Cargar scripts después del First Paint
+            requestIdleCallback ? requestIdleCallback(loadScripts) : setTimeout(loadScripts, 100);
+            
+            console.log('🚀 IA Deslumbrante - Inicializado');
+        }
+        
+        // Inicializar cuando el DOM esté listo
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
+        
+        // Preload de recursos críticos en idle time
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(() => {
+                // Precargar imágenes si las hubiera
+                // const img = new Image();
+                // img.src = 'ruta-a-imagen-critica.webp';
+            });
+        }
+    </script>
+
+    <!-- Service Worker para caching (opcional) -->
+    <script>
+        if ('serviceWorker' in navigator && location.protocol === 'https:') {
+            navigator.serviceWorker.register('/sw.js').catch(console.warn);
+        }
+    </script>
 </body>
 </html>

@@ -1,6 +1,14 @@
+/* IA DESLUMBRANTE - ESTILOS ULTRA OPTIMIZADOS */
+/* Performance-first CSS con animaciones GPU-accelerated */
+
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;700&display=swap');
 
+/* ========================================
+   VARIABLES CSS OPTIMIZADAS
+   ======================================== */
+
 :root {
+    /* Colores base */
     --color-base-dark: #050816;
     --color-accent1: #00f6ff;
     --color-accent2: #ff00e0;
@@ -9,132 +17,81 @@
     --color-text-primary: #e0e0e0;
     --color-text-secondary: #888ea0;
 
+    /* Tipografía */
     --font-headings: 'Orbitron', sans-serif;
     --font-body: 'Roboto', sans-serif;
 
-    --color-accent1_50: rgba(0, 246, 255, 0.5);
-    --color-accent2_50: rgba(255, 0, 224, 0.5);
-    
-    /* Variables para efectos optimizados */
+    /* Efectos optimizados */
+    --glow-soft: 0 0 10px currentColor, 0 0 20px currentColor;
     --glow-intense: 0 0 15px currentColor, 0 0 30px currentColor, 0 0 45px currentColor;
-    --glow-extreme: 0 0 20px currentColor, 0 0 40px currentColor, 0 0 60px currentColor, 0 0 80px currentColor;
+    --blur-light: blur(5px);
+    --blur-heavy: blur(15px);
+    
+    /* Transiciones */
+    --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Dimensiones */
+    --border-radius: 20px;
+    --border-radius-small: 10px;
+    
+    /* Variables dinámicas para scroll */
+    --scroll-percent: 0;
 }
 
-/* Estilos base mejorados */
-/* Reset y estilos base */
-* {
+/* ========================================
+   RESET Y BASE OPTIMIZADO
+   ======================================== */
+
+*, *::before, *::after {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
 }
 
 html {
-    width: 100%;
-    overflow-x: hidden;
     scroll-behavior: smooth;
-    /* Ocultar scrollbar para Chrome, Safari y Opera */
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    overflow-x: hidden;
+    /* Ocultar scrollbar */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
-/* Ocultar scrollbar para Chrome, Safari y Opera */
-html::-webkit-scrollbar {
-    display: none;
-}
+html::-webkit-scrollbar { display: none; }
 
 body {
-    margin: 0;
-    padding: 0;
     font-family: var(--font-body);
-    background: radial-gradient(ellipse at center, #1a0933 0%, var(--color-base-dark) 70%);
+    background: 
+        radial-gradient(ellipse at center, #1a0933 0%, var(--color-base-dark) 70%),
+        radial-gradient(circle at 20% 80%, rgba(0, 246, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 0, 224, 0.1) 0%, transparent 50%);
+    background-attachment: fixed;
     color: var(--color-text-primary);
     overflow-x: hidden;
-    width: 100%;
-    position: relative;
-    /* Asegurar que no haya scroll horizontal */
-    max-width: 100vw;
-    /* Ocultar scrollbar */
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
-    /* Asegurar que el contenido no desborde */
-    box-sizing: border-box;
-}
-
-/* Ocultar scrollbar para Chrome, Safari y Opera */
-body::-webkit-scrollbar {
-    display: none;
-}
-
-/* Cursor personalizado solo para desktop */
-@media (min-width: 769px) and (pointer: fine) {
-    body {
-        cursor: none;
-        overflow-x: hidden;
-    }
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     
-    /* Asegurar que el cursor esté por encima de todo */
-    .custom-cursor {
-        z-index: 9999 !important;
-    }
+    /* Performance optimizations */
+    will-change: transform, filter;
+    transform: translateZ(0); /* Force GPU acceleration */
+    
+    /* Hide scrollbar */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
-.custom-cursor {
-    position: fixed;
-    width: 20px;
-    height: 20px;
-    background: radial-gradient(circle, var(--color-accent1), var(--color-accent2));
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 99999; /* Aseguramos que esté por encima de todo */
-    mix-blend-mode: screen;
-    transform: translate(-50%, -50%);
-    transition: transform 0.15s ease, background 0.2s ease, opacity 0.1s ease;
-    animation: cursorPulse 2s infinite;
-    box-shadow: 
-        0 0 15px var(--color-accent1),
-        0 0 30px var(--color-accent2),
-        inset 0 0 10px rgba(255, 255, 255, 0.3);
-    border: 2px solid rgba(255, 255, 255, 0.5);
-    opacity: 0.8;
-    will-change: transform, opacity; /* Mejora el rendimiento */
+body::-webkit-scrollbar { display: none; }
+
+/* Cursor personalizado solo en desktop */
+@media (min-width: 769px) and (pointer: fine) {
+    body { cursor: none; }
 }
 
-.cursor-trail {
-    position: fixed;
-    width: 40px;
-    height: 40px;
-    background: radial-gradient(circle, transparent 60%, var(--color-accent1) 70%, transparent 80%);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9998;
-    transform: translate(-50%, -50%);
-    opacity: 0.3;
-    animation: trailPulse 3s infinite;
-}
-
-@keyframes trailPulse {
-    0%, 100% { 
-        transform: translate(-50%, -50%) scale(1); 
-        opacity: 0.2;
-    }
-    50% { 
-        transform: translate(-50%, -50%) scale(1.2); 
-        opacity: 0.4;
-    }
-}
-
-@keyframes cursorPulse {
-    0%, 100% { 
-        transform: translate(-50%, -50%) scale(1); 
-        opacity: 0.8;
-    }
-    50% { 
-        transform: translate(-50%, -50%) scale(1.3); 
-        opacity: 1;
-    }
-}
-
-/* Estilos base y reinicios */
+/* ========================================
+   LAYOUT PRINCIPAL OPTIMIZADO
+   ======================================== */
 
 header, section {
     position: relative;
@@ -143,32 +100,49 @@ header, section {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 40px 20px;
-    box-sizing: border-box;
+    padding: 2rem;
     text-align: center;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: linear-gradient(135deg, rgba(0, 246, 255, 0.05), rgba(255, 0, 224, 0.05));
-    transition: all 0.3s ease;
-    width: 100%;
-    max-width: 100%;
-    /* Asegurar que no haya desbordamiento */
-    overflow: hidden;
-    /* Asegurar que el padding no cause desbordamiento */
-    box-sizing: border-box;
+    
+    /* Backdrop optimizado */
+    backdrop-filter: var(--blur-light);
+    background: 
+        linear-gradient(135deg, 
+            rgba(0, 246, 255, 0.03), 
+            rgba(255, 0, 224, 0.03)
+        );
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    
+    /* Performance */
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    
+    /* Transición suave */
+    transition: var(--transition-smooth);
 }
 
-header:hover, section:hover {
-    transform: scale(1.01);
-    box-shadow: 0 0 15px currentColor, 0 0 30px currentColor;
+/* Efecto hover optimizado */
+@media (hover: hover) {
+    header:hover, section:hover {
+        transform: translateZ(0) scale(1.005);
+        background: 
+            linear-gradient(135deg, 
+                rgba(0, 246, 255, 0.05), 
+                rgba(255, 0, 224, 0.05)
+            );
+    }
 }
 
 footer {
-    min-height: auto; /* Footer más pequeño */
-    padding: 20px;
-    text-align: center;
-    background-color: #030610; /* Un poco más oscuro para diferenciar */
+    min-height: auto;
+    padding: 2rem;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.9));
+    border-top: 2px solid rgba(0, 246, 255, 0.3);
+    backdrop-filter: var(--blur-light);
 }
+
+/* ========================================
+   TIPOGRAFÍA OPTIMIZADA
+   ======================================== */
 
 h1, h2, h3 {
     font-family: var(--font-headings);
@@ -177,148 +151,130 @@ h1, h2, h3 {
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin-bottom: 0.5em;
-    text-shadow: 0 0 15px var(--color-accent1), 0 0 30px var(--color-accent2);
-    animation: gradientShift 3s ease infinite;
-    filter: brightness(0.9);
+    
     text-transform: uppercase;
-    letter-spacing: 3px;
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+    
+    /* Animación del gradiente */
+    animation: gradientFlow 4s ease-in-out infinite;
+    
+    /* Performance */
+    will-change: background-position;
+    transform: translateZ(0);
 }
 
-@keyframes gradientShift {
-    0% { background-position: 0% 50%; }
+@keyframes gradientFlow {
+    0%, 100% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
 }
 
 h1 {
-    font-size: 4rem;
+    font-size: clamp(2.5rem, 8vw, 4rem);
     font-weight: 900;
-    transform: perspective(500px) rotateX(15deg);
+    line-height: 1.1;
 }
 
 h2 {
-    font-size: 3rem;
+    font-size: clamp(2rem, 6vw, 3rem);
     font-weight: 700;
-    transform: perspective(300px) rotateY(5deg);
+    line-height: 1.2;
 }
-
 p {
-    font-size: 1.3rem;
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
     line-height: 1.8;
     max-width: 600px;
     color: var(--color-text-secondary);
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(5px);
-    padding: 20px;
-    border-radius: 15px;
+    
+    /* Contenedor con backdrop */
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.3s ease;
+    backdrop-filter: var(--blur-light);
+    
+    /* Transición suave */
+    transition: var(--transition-smooth);
+    
+    /* Performance */
+    will-change: transform, background;
+    transform: translateZ(0);
 }
 
-p:hover {
-    transform: scale(1.05);
-    box-shadow: var(--glow-intense);
-    background: rgba(255, 255, 255, 0.1);
+@media (hover: hover) {
+    p:hover {
+        transform: translateZ(0) scale(1.02);
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: var(--glow-soft);
+    }
 }
 
-/* Fondo Animado EXTREMO */
-body::after {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: -5;
-    background: 
-        radial-gradient(circle at 20% 80%, var(--color-accent1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, var(--color-accent2) 0%, transparent 50%),
-        radial-gradient(circle at 40% 40%, var(--color-accent3) 0%, transparent 50%),
-        conic-gradient(from 0deg at 50% 50%, var(--color-accent1), var(--color-accent2), var(--color-accent3), var(--color-accent1));
-    background-size: 300% 300%, 250% 250%, 400% 400%, 800% 800%;
-    animation: 
-        bgShift1 10s ease infinite,
-        bgShift2 15s ease infinite reverse,
-        bgShift3 20s ease infinite,
-        bgRotate 30s linear infinite;
-    opacity: 0.3;
-    filter: blur(100px);
-}
+/* ========================================
+   HERO ORBE - ULTRA OPTIMIZADO
+   ======================================== */
 
-@keyframes bgShift1 {
-    0%, 100% { background-position: 0% 0%, 100% 100%, 50% 50%, 0% 0%; }
-    50% { background-position: 100% 100%, 0% 0%, 0% 100%, 100% 0%; }
-}
-
-@keyframes bgShift2 {
-    0%, 100% { background-size: 300% 300%, 250% 250%, 400% 400%, 800% 800%; }
-    50% { background-size: 400% 400%, 350% 350%, 300% 300%, 600% 600%; }
-}
-
-@keyframes bgShift3 {
-    0%, 100% { transform: translateX(0) translateY(0); }
-    25% { transform: translateX(5%) translateY(-3%); }
-    50% { transform: translateX(-3%) translateY(5%); }
-    75% { transform: translateX(3%) translateY(3%); }
-}
-
-@keyframes bgRotate {
-    0% { filter: blur(100px) hue-rotate(0deg); }
-    100% { filter: blur(100px) hue-rotate(360deg); }
-}
-
-/* Eliminar animaciones de partículas viejas y agregar nuevos efectos */
-
-/* Efectos de texto mejorados */
-header h1, section h2 {
-    text-shadow: 0 0 10px var(--color-accent1), 0 0 20px var(--color-accent2);
-    filter: drop-shadow(0 0 5px currentColor);
-}
-
-section p {
-    text-shadow: 0 0 5px rgba(0, 246, 255, 0.2);
-    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.1));
-}
-
-/* Orbe Hero EXTREMO */
 .hero-orb-container {
-    margin-bottom: 50px;
-    position: relative;
+    margin-bottom: 3rem;
     perspective: 1000px;
 }
 
 .hero-orb {
-    width: 200px;
-    height: 200px;
-    background: conic-gradient(from 0deg, var(--color-accent1), var(--color-accent2), var(--color-accent3), var(--color-accent4), var(--color-accent1));
+    width: clamp(120px, 25vw, 200px);
+    height: clamp(120px, 25vw, 200px);
+    
+    /* Gradiente cónico optimizado */
+    background: conic-gradient(
+        from 0deg,
+        var(--color-accent1),
+        var(--color-accent2),
+        var(--color-accent3),
+        var(--color-accent4),
+        var(--color-accent1)
+    );
+    
     border-radius: 50%;
-    box-shadow: var(--glow-intense), inset 0 0 40px rgba(255, 255, 255, 0.2);
-    animation: 
-        orbPulseExtreme 2s infinite ease-in-out,
-        orbRotate 10s linear infinite,
-        orbFloat 4s ease-in-out infinite;
-    position: relative;
-    transform-style: preserve-3d;
-    border: 3px solid rgba(255, 255, 255, 0.3);
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    box-shadow: var(--glow-intense);
+    
+    /* Performance critical */
     will-change: transform;
+    transform: translateZ(0);
+    transform-style: preserve-3d;
+    
+    /* Posición relativa para pseudo-elementos */
+    position: relative;
 }
 
+/* Efecto de halo */
 .hero-orb::before {
     content: '';
     position: absolute;
-    top: -20px;
-    left: -20px;
-    right: -20px;
-    bottom: -20px;
-    background: conic-gradient(from 180deg, transparent, var(--color-accent1), transparent);
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    
+    background: conic-gradient(
+        from 0deg,
+        transparent,
+        rgba(0, 246, 255, 0.5),
+        transparent,
+        rgba(255, 0, 224, 0.5),
+        transparent
+    );
+    
     border-radius: 50%;
-    animation: orbHalo 3s linear infinite;
     z-index: -1;
+    
+    /* Animación continua */
+    animation: orbHalo 6s linear infinite;
+    
+    /* Performance */
+    will-change: transform, opacity;
+    transform: translateZ(0);
 }
 
+/* Núcleo interno del orbe */
 .hero-orb::after {
     content: '';
     position: absolute;
@@ -326,66 +282,79 @@ section p {
     left: 50%;
     width: 60%;
     height: 60%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.8), transparent);
+    
+    background: radial-gradient(
+        circle,
+        rgba(255, 255, 255, 0.8) 0%,
+        rgba(255, 255, 255, 0.4) 40%,
+        transparent 70%
+    );
+    
     border-radius: 50%;
     transform: translate(-50%, -50%);
-    animation: orbCore 2s ease-in-out infinite;
-}
-
-@keyframes orbPulseExtreme {
-    0%, 100% {
-        transform: scale(1) rotateX(0deg);
-        filter: brightness(1) saturate(1);
-    }
-    50% {
-        transform: scale(1.2) rotateX(180deg);
-        filter: brightness(1.5) saturate(2);
-    }
-}
-
-@keyframes orbRotate {
-    0% { transform: rotateY(0deg) rotateZ(0deg); }
-    100% { transform: rotateY(360deg) rotateZ(360deg); }
-}
-
-@keyframes orbFloat {
-    0%, 100% { transform: translateY(0px) rotateX(0deg); }
-    50% { transform: translateY(-20px) rotateX(15deg); }
+    
+    /* Animación de pulsación */
+    animation: orbCore 3s ease-in-out infinite;
+    
+    /* Performance */
+    will-change: transform, opacity;
+    transform-origin: center center;
 }
 
 @keyframes orbHalo {
-    0% { transform: rotate(0deg) scale(1); opacity: 0.5; }
-    50% { transform: rotate(180deg) scale(1.1); opacity: 1; }
-    100% { transform: rotate(360deg) scale(1); opacity: 0.5; }
+    0% { 
+        transform: rotate(0deg) scale(1); 
+        opacity: 0.6; 
+    }
+    50% { 
+        transform: rotate(180deg) scale(1.05); 
+        opacity: 1; 
+    }
+    100% { 
+        transform: rotate(360deg) scale(1); 
+        opacity: 0.6; 
+    }
 }
 
 @keyframes orbCore {
-    0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
-    50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+    0%, 100% { 
+        opacity: 0.6; 
+        transform: translate(-50%, -50%) scale(1); 
+    }
+    50% { 
+        opacity: 1; 
+        transform: translate(-50%, -50%) scale(1.1); 
+    }
 }
 
-/* Ajustar el texto del Hero para que no se solape tanto con el orbe si es necesario */
-#hero h1 {
-    margin-top: 0; /* El contenedor del orbe ya da espacio */
-}
+/* ========================================
+   RED NEURONAL - OPTIMIZADA
+   ======================================== */
 
-/* Red Neuronal EXTREMA */
 .neural-network-animation {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 50px;
-    margin-bottom: 40px;
-    padding: 30px;
+    gap: clamp(30px, 8vw, 60px);
+    margin-bottom: 2rem;
+    padding: 2rem;
     min-height: 200px;
+    
+    /* Contenedor glassmorphism */
     background: rgba(0, 0, 0, 0.3);
-    border-radius: 20px;
+    border-radius: var(--border-radius);
     border: 2px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(15px);
+    backdrop-filter: var(--blur-heavy);
+    
     position: relative;
     overflow: hidden;
+    
+    /* Performance */
+    will-change: transform;
+    transform: translateZ(0);
 }
 
+/* Efecto de escaneo */
 .neural-network-animation::before {
     content: '';
     position: absolute;
@@ -393,33 +362,67 @@ section p {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(0, 246, 255, 0.2), transparent);
-    animation: neuralScan 3s infinite;
+    
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(0, 246, 255, 0.2),
+        transparent
+    );
+    
+    /* Animación de escaneo */
+    animation: neuralScan 4s ease-in-out infinite;
+    
+    /* Performance */
+    will-change: transform;
+    transform: translateZ(0);
 }
 
 @keyframes neuralScan {
-    0% { left: -100%; }
-    100% { left: 100%; }
+    0% { 
+        left: -100%; 
+        opacity: 0; 
+    }
+    50% { 
+        opacity: 1; 
+    }
+    100% { 
+        left: 100%; 
+        opacity: 0; 
+    }
 }
 
 .nn-layer {
     display: flex;
     flex-direction: column;
-    gap: 30px;
+    gap: clamp(20px, 5vw, 35px);
     z-index: 2;
 }
 
 .nn-node {
-    width: 35px;
-    height: 35px;
+    width: clamp(25px, 6vw, 40px);
+    height: clamp(25px, 6vw, 40px);
+    
+    background: radial-gradient(
+        circle,
+        var(--color-accent1) 0%,
+        var(--color-accent2) 70%,
+        transparent 100%
+    );
+    
     border-radius: 50%;
-    background: radial-gradient(circle, var(--color-accent1), var(--color-accent2));
-    box-shadow: var(--glow-extreme);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: var(--glow-intense);
+    
     position: relative;
+    
+    /* Performance critical */
+    will-change: transform, filter;
+    transform: translateZ(0);
     transform-style: preserve-3d;
-    animation: nodeActive 2s ease-in-out infinite;
 }
 
+/* Efecto de pulso en los nodos */
 .nn-node::before {
     content: '';
     position: absolute;
@@ -427,43 +430,99 @@ section p {
     left: 50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle, transparent 40%, currentColor 45%, transparent 50%);
+    
+    background: radial-gradient(
+        circle,
+        transparent 40%,
+        rgba(0, 246, 255, 0.3) 45%,
+        transparent 50%
+    );
+    
     border-radius: 50%;
     transform: translate(-50%, -50%);
-    animation: nodePulse 1.5s ease-in-out infinite;
     z-index: -1;
-}
-
-@keyframes nodeActive {
-    0%, 100% { 
-        transform: scale(1) rotateY(0deg); 
-        filter: hue-rotate(0deg); 
-    }
-    50% { 
-        transform: scale(1.3) rotateY(180deg); 
-        filter: hue-rotate(120deg); 
-    }
+    
+    /* Animación de pulso */
+    animation: nodePulse 2s ease-in-out infinite;
+    
+    /* Performance */
+    will-change: transform, opacity;
 }
 
 @keyframes nodePulse {
-    0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
-    50% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.5); }
+    0%, 100% { 
+        opacity: 0.3; 
+        transform: translate(-50%, -50%) scale(1); 
+    }
+    50% { 
+        opacity: 0.8; 
+        transform: translate(-50%, -50%) scale(1.2); 
+    }
 }
 
-/* Flujo de Datos EXTREMO */
+/* Conexiones entre nodos */
+.nn-connections-1::before,
+.nn-connections-2::before {
+    content: '';
+    position: absolute;
+    width: clamp(30px, 8vw, 50px);
+    height: 2px;
+    
+    background: linear-gradient(
+        90deg,
+        var(--color-accent1),
+        var(--color-accent2)
+    );
+    
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    
+    box-shadow: 0 0 10px currentColor;
+    border-radius: 1px;
+    
+    /* Animación de conexión */
+    animation: connectionFlow 3s ease-in-out infinite;
+    
+    /* Performance */
+    will-change: transform, opacity;
+}
+
+@keyframes connectionFlow {
+    0%, 100% { 
+        opacity: 0.5; 
+        transform: translateY(-50%) scaleX(1); 
+    }
+    50% { 
+        opacity: 1; 
+        transform: translateY(-50%) scaleX(1.1); 
+    }
+}
+/* ========================================
+   FLUJO DE DATOS - OPTIMIZADO
+   ======================================== */
+
 .data-flow-animation {
     position: relative;
     width: 90%;
     max-width: 500px;
-    height: 300px;
-    margin-bottom: 40px;
+    height: clamp(200px, 40vw, 350px);
+    margin-bottom: 2rem;
+    
+    /* Contenedor glassmorphism */
     background: rgba(0, 0, 0, 0.4);
-    border-radius: 20px;
+    border-radius: var(--border-radius);
     border: 2px solid rgba(0, 246, 255, 0.3);
+    backdrop-filter: var(--blur-light);
+    
     overflow: hidden;
-    backdrop-filter: blur(10px);
+    
+    /* Performance */
+    will-change: transform;
+    transform: translateZ(0);
 }
 
+/* Fondo animado del flujo */
 .data-flow-animation::before {
     content: '';
     position: absolute;
@@ -471,175 +530,200 @@ section p {
     left: 0;
     right: 0;
     bottom: 0;
+    
     background: 
-        linear-gradient(45deg, transparent 30%, rgba(0, 246, 255, 0.1) 50%, transparent 70%),
-        linear-gradient(-45deg, transparent 30%, rgba(255, 0, 224, 0.1) 50%, transparent 70%);
-    animation: dataFlowBg 4s ease-in-out infinite;
+        linear-gradient(45deg, 
+            transparent 30%, 
+            rgba(0, 246, 255, 0.1) 50%, 
+            transparent 70%
+        ),
+        linear-gradient(-45deg, 
+            transparent 30%, 
+            rgba(255, 0, 224, 0.1) 50%, 
+            transparent 70%
+        );
+    
+    /* Animación de flujo */
+    animation: dataFlowBg 6s ease-in-out infinite;
+    
+    /* Performance */
+    will-change: transform;
+    transform: translateZ(0);
 }
 
 @keyframes dataFlowBg {
-    0%, 100% { transform: translateX(-100%) translateY(-100%); }
-    50% { transform: translateX(100%) translateY(100%); }
+    0%, 100% { 
+        transform: translate(-100%, -100%); 
+        opacity: 0.5; 
+    }
+    50% { 
+        transform: translate(100%, 100%); 
+        opacity: 1; 
+    }
 }
 
 .flow-particle {
     position: absolute;
     border-radius: 50%;
-    box-shadow: var(--glow-intense);
-    filter: brightness(1.5);
+    
+    /* Glow effect */
+    box-shadow: 
+        0 0 10px currentColor,
+        0 0 20px currentColor,
+        inset 0 0 5px rgba(255, 255, 255, 0.3);
+    
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    
+    /* Performance critical */
+    will-change: transform, opacity;
+    transform: translateZ(0);
     z-index: 2;
 }
 
-/* Cierre EXTREMO */
+/* ========================================
+   CIERRE - FRAGMENTOS ORBITALES
+   ======================================== */
+
 .closing-animation-container {
     position: relative;
-    width: 300px;
-    height: 300px;
-    margin: 40px auto;
-    background: radial-gradient(circle, rgba(0, 0, 0, 0.5), transparent);
+    width: clamp(200px, 40vw, 350px);
+    height: clamp(200px, 40vw, 350px);
+    margin: 2rem auto;
+    
+    /* Contenedor central */
+    background: radial-gradient(
+        circle,
+        rgba(0, 0, 0, 0.6) 0%,
+        rgba(0, 0, 0, 0.3) 60%,
+        transparent 100%
+    );
+    
     border-radius: 50%;
     border: 3px solid rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
+    backdrop-filter: var(--blur-light);
+    
+    /* Performance */
+    will-change: transform;
+    transform: translateZ(0);
+    transform-style: preserve-3d;
 }
 
+/* Halo exterior rotativo */
 .closing-animation-container::before {
     content: '';
     position: absolute;
-    top: -10px;
-    left: -10px;
-    right: -10px;
-    bottom: -10px;
-    background: conic-gradient(from 0deg, var(--color-accent1), var(--color-accent2), var(--color-accent3), var(--color-accent1));
+    top: -15px;
+    left: -15px;
+    right: -15px;
+    bottom: -15px;
+    
+    background: conic-gradient(
+        from 0deg,
+        var(--color-accent1) 0%,
+        var(--color-accent2) 25%,
+        var(--color-accent3) 50%,
+        var(--color-accent4) 75%,
+        var(--color-accent1) 100%
+    );
+    
     border-radius: 50%;
-    animation: closingHalo 5s linear infinite;
     z-index: -1;
+    
+    /* Rotación continua */
+    animation: closingHalo 8s linear infinite;
+    
+    /* Performance */
+    will-change: transform, opacity;
+    transform: translateZ(0);
 }
 
 @keyframes closingHalo {
-    0% { transform: rotate(0deg) scale(1); opacity: 0.5; }
-    50% { transform: rotate(180deg) scale(1.1); opacity: 1; }
-    100% { transform: rotate(360deg) scale(1); opacity: 0.5; }
+    0% { 
+        transform: rotate(0deg) scale(1); 
+        opacity: 0.6; 
+    }
+    50% { 
+        transform: rotate(180deg) scale(1.05); 
+        opacity: 1; 
+    }
+    100% { 
+        transform: rotate(360deg) scale(1); 
+        opacity: 0.6; 
+    }
 }
 
 .closing-fragment {
     position: absolute;
     border-radius: 50%;
-    box-shadow: var(--glow-extreme);
-    filter: brightness(1.8);
+    
+    /* Glow intenso */
+    box-shadow: 
+        0 0 15px currentColor,
+        0 0 30px currentColor,
+        inset 0 0 8px rgba(255, 255, 255, 0.4);
+    
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    
+    /* Performance critical para órbitas */
+    will-change: transform;
+    transform: translateZ(0);
     z-index: 3;
 }
 
+/* ========================================
+   EFECTOS DE HOVER OPTIMIZADOS
+   ======================================== */
 
-
-/* EFECTOS EXTREMOS ADICIONALES */
-
-/* Efectos de hover extremos */
-.neural-network-animation:hover {
-    transform: scale(1.05) rotateX(5deg);
-    box-shadow: var(--glow-extreme);
-    border-color: var(--color-accent1);
-}
-
-.data-flow-animation:hover {
-    transform: scale(1.03) rotateY(3deg);
-    border-color: var(--color-accent2);
-    box-shadow: var(--glow-intense);
-}
-
-.closing-animation-container:hover {
-    transform: scale(1.1) rotateZ(5deg);
-    filter: brightness(1.3);
-}
-
-/* Efectos de scroll extremos */
-@media (prefers-reduced-motion: no-preference) {
-    * {
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+@media (hover: hover) {
+    .neural-network-animation:hover {
+        transform: translateZ(0) scale(1.02);
+        border-color: var(--color-accent1);
+        box-shadow: var(--glow-soft);
     }
     
-    body {
-        animation: bodyPulse 10s ease-in-out infinite;
+    .data-flow-animation:hover {
+        transform: translateZ(0) scale(1.01);
+        border-color: var(--color-accent2);
+        box-shadow: var(--glow-soft);
     }
     
-    @keyframes bodyPulse {
-        0%, 100% { filter: brightness(1) contrast(1); }
-        50% { filter: brightness(1.1) contrast(1.1); }
+    .closing-animation-container:hover {
+        transform: translateZ(0) scale(1.05);
+        filter: brightness(1.2);
+    }
+    
+    .nn-node:hover {
+        transform: translateZ(0) scale(1.2);
+        filter: brightness(1.3);
     }
 }
 
-/* Efectos de conexiones neuronales dinámicas */
-.nn-connections-1::before,
-.nn-connections-2::before {
-    content: '';
-    position: absolute;
-    width: 40px;
-    height: 2px;
-    background: linear-gradient(90deg, var(--color-accent1), var(--color-accent2));
-    top: 50%;
-    left: 0;
-    transform: translateY(-50%);
-    animation: connectionPulse 2s ease-in-out infinite;
-    box-shadow: 0 0 10px currentColor;
-}
+/* ========================================
+   RESPONSIVE OPTIMIZADO
+   ======================================== */
 
-@keyframes connectionPulse {
-    0%, 100% { 
-        opacity: 0.5; 
-        transform: translateY(-50%) scaleX(1); 
-    }
-    50% { 
-        opacity: 1; 
-        transform: translateY(-50%) scaleX(1.2); 
-    }
-}
-
-/* Footer mejorado */
-footer {
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.9));
-    border-top: 2px solid rgba(0, 246, 255, 0.3);
-    backdrop-filter: blur(10px);
-    color: var(--color-text-secondary);
-    text-shadow: 0 0 10px currentColor;
-}
-
-footer p {
-    background: none;
-    border: none;
-    backdrop-filter: none;
-}
-
-/* Responsive mejorado */
 @media (max-width: 768px) {
-    h1 { 
-        font-size: 2.5rem; 
-        transform: none;
-        letter-spacing: 2px;
-    }
-    h2 { 
-        font-size: 2rem; 
-        transform: none;
-        letter-spacing: 1px;
+    /* Reducir efectos en móvil para mejor performance */
+    :root {
+        --glow-soft: 0 0 5px currentColor;
+        --glow-intense: 0 0 10px currentColor;
+        --blur-light: blur(3px);
+        --blur-heavy: blur(8px);
     }
     
-    p {
-        font-size: 1.1rem;
-        padding: 15px;
-    }
-    
-    .hero-orb {
-        width: 120px;
-        height: 120px;
+    header, section {
+        padding: 1.5rem;
+        backdrop-filter: var(--blur-light);
     }
     
     .neural-network-animation {
         gap: 20px;
-        padding: 15px;
+        padding: 1rem;
         min-height: 150px;
     }
     
-    .nn-node {
-        width: 25px;
-        height: 25px;
+    .nn-layer {
+        gap: 15px;
     }
     
     .data-flow-animation {
@@ -647,92 +731,94 @@ footer p {
         width: 95%;
     }
     
-    .closing-animation-container {
-        width: 150px;
-        height: 150px;
-    }
-    
-    /* Desactivar efectos 3D en móvil */
-    header, section {
-        transform: none !important;
-    }
-    
-    .neural-network-animation:hover,
-    .data-flow-animation:hover,
-    .closing-animation-container:hover {
-        transform: none !important;
+    /* Desactivar transformaciones 3D en móvil */
+    .hero-orb,
+    .nn-node,
+    .closing-fragment {
+        transform-style: flat;
     }
 }
 
 @media (max-width: 480px) {
-    h1 { font-size: 2rem; }
-    h2 { font-size: 1.5rem; }
-    
-    p {
-        font-size: 1rem;
-        padding: 10px;
-    }
-    
-    .hero-orb {
-        width: 100px;
-        height: 100px;
+    header, section {
+        padding: 1rem;
     }
     
     .neural-network-animation {
-        gap: 15px;
-        padding: 10px;
         flex-direction: column;
+        gap: 15px;
+        padding: 0.8rem;
     }
     
     .nn-layer {
         flex-direction: row;
-        gap: 15px;
+        gap: 10px;
     }
     
     .data-flow-animation {
         height: 150px;
     }
     
-    .closing-animation-container {
-        width: 120px;
-        height: 120px;
+    p {
+        font-size: 0.9rem;
+        padding: 1rem;
     }
 }
 
-/* Efectos de performance extremos */
-@supports (backdrop-filter: blur(10px)) {
-    .performance-boost {
-        will-change: transform, opacity, filter;
-        transform: translateZ(0);
+/* ========================================
+   UTILIDADES DE PERFORMANCE
+   ======================================== */
+
+/* Contenido que aparece en scroll */
+.fade-in-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: var(--transition-slow);
+    will-change: transform, opacity;
+}
+
+.fade-in-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Forzar aceleración por GPU */
+.gpu-accelerated {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+/* Contenido crítico para First Paint */
+.critical-content {
+    contain: layout style paint;
+}
+
+/* Lazy loading para contenido no crítico */
+.lazy-content {
+    content-visibility: auto;
+    contain-intrinsic-size: 300px;
+}
+
+/* Prefiere animaciones reducidas */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    
+    .hero-orb::before,
+    .hero-orb::after {
+        animation: none;
     }
 }
 
-/* Animación de carga extrema */
-@keyframes loadingExtreme {
-    0% { 
-        opacity: 0; 
-        transform: scale(0.5) rotate(-180deg); 
-        filter: blur(20px); 
-    }
-    50% { 
-        opacity: 0.8; 
-        transform: scale(1.1) rotate(0deg); 
-        filter: blur(5px); 
-    }
-    100% { 
-        opacity: 1; 
-        transform: scale(1) rotate(0deg); 
-        filter: blur(0px); 
-    }
-}
-
-body.loading * {
-    animation: loadingExtreme 1s ease-out forwards;
-}
-
-/* Efectos de máximo contraste para elementos activos */
-.extreme-active {
-    filter: brightness(2) saturate(2) contrast(1.5) !important;
-    transform: scale(1.1) !important;
-    z-index: 1000 !important;
+/* Focus visible para navegación por teclado */
+*:focus-visible {
+    outline: 2px solid var(--color-accent1);
+    outline-offset: 2px;
+    border-radius: var(--border-radius-small);
 }
