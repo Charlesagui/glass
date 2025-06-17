@@ -994,33 +994,44 @@ const APP = (() => {
                         console.error('Error al registrar ServiceWorker:', error);
                     });
             }
-            
-        } catch (error) {
-            console.error('Error al inicializar la aplicación:', error);
+        } catch (e) {
+            console.error("Error during initialization", e);
+            state.isInitialized = true; // Still set to true to avoid re-running
         }
     };
-    
+
     // Limpiar al cerrar la página
     window.addEventListener('beforeunload', () => {
-        if (AnimationSystem && typeof AnimationSystem.cleanup === 'function') {
-            AnimationSystem.cleanup();
+        if (window.APP && window.APP.AnimationSystem && typeof window.APP.AnimationSystem.cleanup === 'function') {
+            window.APP.AnimationSystem.cleanup();
         }
     });
-    
-    // Exponer API pública
-    const publicAPI = {
-        init,
-        config,
-        state,
-        utils: Utils,
-        CursorSystem,
-        ScrollSystem,
-        AnimationSystem
+
+    // Optimización del rendimiento durante el scroll
+    const setupScrollOptimization = () => {
+        let isScrolling;
+        window.addEventListener('scroll', () => {
+            window.clearTimeout(isScrolling);
+            if (typeof gsap !== 'undefined') {
+                gsap.globalTimeline.pause();
+            }
+
+            isScrolling = setTimeout(() => {
+                if (typeof gsap !== 'undefined') {
+                    gsap.globalTimeline.resume();
+                }
+            }, 150);
+        }, { passive: true });
     };
     
-    // Hacer que la API esté disponible globalmente
-    window.APP = publicAPI;
-    
+    // Manejar el evento de redimensionamiento
+    const handleResize = Utils.throttle(() => {
+        if (typeof ScrollTrigger !== 'undefined') {
+            ScrollTrigger.refresh();
+        }
+    }, 250);
+    window.addEventListener('resize', handleResize);
+
     // Inicializar cuando el DOM esté listo
     const startApp = () => {
         // Cargar GSAP dinámicamente si es necesario
@@ -1035,6 +1046,7 @@ const APP = (() => {
                 stScript.onload = () => {
                     gsap.registerPlugin(ScrollTrigger);
                     init();
+                    setupScrollOptimization();
                 };
                 document.head.appendChild(stScript);
             };
@@ -1045,6 +1057,7 @@ const APP = (() => {
                 gsap.registerPlugin(ScrollTrigger);
             }
             init();
+            setupScrollOptimization();
         }
     };
     
@@ -1052,18 +1065,22 @@ const APP = (() => {
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', startApp);
     } else {
-        // Si el DOM ya está listo, inicializar en el siguiente ciclo de eventos
         setTimeout(startApp, 0);
     }
     
-    // Manejar el evento de redimensionamiento
-    const handleResize = Utils.throttle(() => {
-        if (typeof ScrollTrigger !== 'undefined') {
-            ScrollTrigger.refresh();
-        }
-    }, 250);
-
-    window.addEventListener('resize', handleResize);
+    // Exponer API pública
+    const publicAPI = {
+        init,
+        config,
+        state,
+        utils: Utils,
+        CursorSystem,
+        ScrollSystem,
+        AnimationSystem
+    };
+    
+    // Hacer que la API esté disponible globalmente
+    window.APP = publicAPI;
     
     // Retornar la API pública
     return publicAPI;
