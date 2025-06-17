@@ -14,13 +14,17 @@ export const ScrollSystem = {
     },
     
     setupSmoothScroll() {
-        // Usar scroll-behavior nativo cuando sea posible
+        // Forzar scroll nativo para probar la fluidez y detección
+        console.log('ScrollSystem: Forzando scroll nativo suave.');
         document.documentElement.style.scrollBehavior = 'smooth';
-        
-        // Solo para desktop avanzado
+        // Comentamos la lógica anterior para desactivar el scroll personalizado temporalmente
+        /*
         if (!config.isMobile && !config.reducedMotion) {
             this.enableAdvancedSmooth();
+        } else {
+            document.documentElement.style.scrollBehavior = 'smooth';
         }
+        */
     },
     
     enableAdvancedSmooth() {
@@ -119,7 +123,9 @@ export const ScrollSystem = {
     applyScrollEffects(percent) {
         // Efecto de hue rotation en el background
         if (!config.reducedMotion) {
-            document.body.style.filter = `hue-rotate(${percent * 60}deg)`;
+            // Comentamos temporalmente para probar rendimiento
+            // document.body.style.filter = `hue-rotate(${percent * 60}deg)`;
+            // console.log('Hue rotate effect disabled for performance test'); 
         }
     }
 };

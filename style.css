@@ -57,12 +57,26 @@ body {
 html {
     scroll-behavior: smooth;
     overflow-x: hidden;
-    /* Ocultar scrollbar */
+    overflow-y: auto; /* Asegurar que el scroll vertical esté habilitado */
+    /* Ocultar scrollbar de forma efectiva */
     -ms-overflow-style: none;
     scrollbar-width: none;
+    height: 100%;
 }
 
-html::-webkit-scrollbar { display: none; }
+/* Ocultar scrollbar para Chrome, Safari y Opera */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+    width: 0 !important;
+    display: none !important;
+}
+
+/* Ocultar scrollbar para IE, Edge y Firefox */
+html, body, * {
+    -ms-overflow-style: none !important;  /* IE y Edge */
+    scrollbar-width: none !important;     /* Firefox */
+}
 
 body {
     font-family: var(--font-body);
@@ -73,12 +87,15 @@ body {
     background-attachment: fixed;
     color: var(--color-text-primary);
     overflow-x: hidden;
+    overflow-y: auto; /* Permitir scroll vertical también en body */
     line-height: 1.6;
+    height: 100%; /* Asegurar que body ocupe todo el alto disponible */
+    margin: 0;
+    padding: 0;
     
     /* Performance optimizations */
     will-change: transform, filter;
     transform: translateZ(0); /* Force GPU acceleration */
-    
 }
 
 /* Cursor personalizado solo en desktop */
@@ -97,27 +114,12 @@ body {
 html, body {
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
-    overscroll-behavior: none;
+    overscroll-behavior: auto; /* Permitir el comportamiento normal de desplazamiento */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
-}
-
-/* Contenedor principal para scroll suave */
-.scroll-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-    perspective: 1px;
-    transform-style: preserve-3d;
-    will-change: transform;
 }
 
 /* Secciones optimizadas para scroll */
@@ -172,6 +174,13 @@ footer {
     border-top: 2px solid rgba(0, 246, 255, 0.3);
     backdrop-filter: var(--blur-light);
     text-align: center;
+}
+
+footer p {
+    margin-left: auto;
+    margin-right: auto;
+    /* max-width (600px) y padding (1.5rem) se heredan de los estilos generales de 'p' */
+    /* El texto dentro de 'p' ya está centrado debido a text-align: center en 'footer' */
 }
 
 /* ========================================
