@@ -142,7 +142,8 @@
                     if (loaded === scripts.length) {
                         // Cargar script principal cuando GSAP esté listo
                         const mainScript = document.createElement('script');
-                        mainScript.src = 'script.js';
+                        mainScript.type = 'module';
+                        mainScript.src = 'js/main.js';
                         mainScript.defer = true;
                         document.head.appendChild(mainScript);
                     }
@@ -161,41 +162,10 @@
             });
         }
         
-        // Intersection Observer para lazy loading de secciones
-        function setupLazyLoading() {
-            const lazyElements = document.querySelectorAll('.fade-in-scroll');
-            
-            if ('IntersectionObserver' in window) {
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add('visible');
-                            observer.unobserve(entry.target);
-                        }
-                    });
-                }, {
-                    threshold: 0.1,
-                    rootMargin: '50px'
-                });
-                
-                lazyElements.forEach(el => observer.observe(el));
-            } else {
-                // Fallback para navegadores sin IntersectionObserver
-                lazyElements.forEach(el => el.classList.add('visible'));
-            }
-        }
-        
         // Inicialización optimizada
         function initApp() {
-            document.body.style.opacity = '1';
-            document.body.classList.remove('loading');
-            
-            setupLazyLoading();
-            
             // Cargar scripts después del First Paint
             requestIdleCallback ? requestIdleCallback(loadScripts) : setTimeout(loadScripts, 100);
-            
-            console.log('🚀 IA Deslumbrante - Inicializado');
         }
         
         // Inicializar cuando el DOM esté listo

@@ -74,19 +74,12 @@ body {
     color: var(--color-text-primary);
     overflow-x: hidden;
     line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
     
     /* Performance optimizations */
     will-change: transform, filter;
     transform: translateZ(0); /* Force GPU acceleration */
     
-    /* Hide scrollbar */
-    -ms-overflow-style: none;
-    scrollbar-width: none;
 }
-
-body::-webkit-scrollbar { display: none; }
 
 /* Cursor personalizado solo en desktop */
 /* The default cursor will remain visible until the JS-powered custom cursor is initialized.
