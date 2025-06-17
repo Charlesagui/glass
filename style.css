@@ -6,7 +6,7 @@
     --color-accent2: #ff00e0;
     --color-accent3: #00ff88;
     --color-accent4: #ff4400;
-    --color-text-primary: #f0f0f0;
+    --color-text-primary: #e0e0e0;
     --color-text-secondary: #888ea0;
 
     --font-headings: 'Orbitron', sans-serif;
@@ -15,26 +15,46 @@
     --color-accent1_50: rgba(0, 246, 255, 0.5);
     --color-accent2_50: rgba(255, 0, 224, 0.5);
     
-    /* Nuevas variables para efectos extremos */
-    --glow-intense: 0 0 20px currentColor, 0 0 40px currentColor, 0 0 60px currentColor;
-    --glow-extreme: 0 0 30px currentColor, 0 0 60px currentColor, 0 0 90px currentColor, 0 0 120px currentColor;
+    /* Variables para efectos optimizados */
+    --glow-intense: 0 0 15px currentColor, 0 0 30px currentColor, 0 0 45px currentColor;
+    --glow-extreme: 0 0 20px currentColor, 0 0 40px currentColor, 0 0 60px currentColor, 0 0 80px currentColor;
 }
 
 /* Estilos base mejorados */
-body, html {
+/* Reset y estilos base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    width: 100%;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+body {
     margin: 0;
     padding: 0;
     font-family: var(--font-body);
     background: radial-gradient(ellipse at center, #1a0933 0%, var(--color-base-dark) 70%);
     color: var(--color-text-primary);
     overflow-x: hidden;
-    scroll-behavior: smooth;
+    width: 100%;
+    position: relative;
 }
 
 /* Cursor personalizado solo para desktop */
 @media (min-width: 769px) and (pointer: fine) {
     body {
         cursor: none;
+        overflow-x: hidden;
+    }
+    
+    /* Asegurar que el cursor esté por encima de todo */
+    .custom-cursor {
+        z-index: 9999 !important;
     }
 }
 
@@ -45,10 +65,10 @@ body, html {
     background: radial-gradient(circle, var(--color-accent1), var(--color-accent2));
     border-radius: 50%;
     pointer-events: none;
-    z-index: 9999;
+    z-index: 99999; /* Aseguramos que esté por encima de todo */
     mix-blend-mode: screen;
     transform: translate(-50%, -50%);
-    transition: transform 0.15s ease, background 0.2s ease;
+    transition: transform 0.15s ease, background 0.2s ease, opacity 0.1s ease;
     animation: cursorPulse 2s infinite;
     box-shadow: 
         0 0 15px var(--color-accent1),
@@ -56,6 +76,7 @@ body, html {
         inset 0 0 10px rgba(255, 255, 255, 0.3);
     border: 2px solid rgba(255, 255, 255, 0.5);
     opacity: 0.8;
+    will-change: transform, opacity; /* Mejora el rendimiento */
 }
 
 .cursor-trail {
@@ -94,15 +115,6 @@ body, html {
 }
 
 /* Estilos base y reinicios */
-body, html {
-    margin: 0;
-    padding: 0;
-    font-family: var(--font-body);
-    background-color: var(--color-base-dark);
-    color: var(--color-text-primary);
-    overflow-x: hidden; /* Evitar scroll horizontal */
-    scroll-behavior: smooth; /* Para el scroll suave entre secciones si usamos anclas */
-}
 
 header, section {
     position: relative;
@@ -118,11 +130,14 @@ header, section {
     border: 1px solid rgba(255, 255, 255, 0.1);
     background: linear-gradient(135deg, rgba(0, 246, 255, 0.05), rgba(255, 0, 224, 0.05));
     transition: all 0.3s ease;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 header:hover, section:hover {
-    transform: scale(1.02);
-    box-shadow: var(--glow-intense);
+    transform: scale(1.01);
+    box-shadow: 0 0 15px currentColor, 0 0 30px currentColor;
 }
 
 footer {
@@ -140,9 +155,9 @@ h1, h2, h3 {
     background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-bottom: 0.5em;
-    text-shadow: 0 0 20px var(--color-accent1), 0 0 40px var(--color-accent2);
+    text-shadow: 0 0 15px var(--color-accent1), 0 0 30px var(--color-accent2);
     animation: gradientShift 3s ease infinite;
-    filter: brightness(1.2);
+    filter: brightness(0.9);
     text-transform: uppercase;
     letter-spacing: 3px;
 }
@@ -170,7 +185,7 @@ p {
     line-height: 1.8;
     max-width: 600px;
     color: var(--color-text-secondary);
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(5px);
     padding: 20px;
     border-radius: 15px;
@@ -236,13 +251,13 @@ body::after {
 
 /* Efectos de texto mejorados */
 header h1, section h2 {
-    text-shadow: 0 0 15px var(--color-accent1), 0 0 30px var(--color-accent2);
-    filter: drop-shadow(0 0 10px currentColor);
+    text-shadow: 0 0 10px var(--color-accent1), 0 0 20px var(--color-accent2);
+    filter: drop-shadow(0 0 5px currentColor);
 }
 
 section p {
-    text-shadow: 0 0 8px rgba(0, 246, 255, 0.3);
-    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.2));
+    text-shadow: 0 0 5px rgba(0, 246, 255, 0.2);
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.1));
 }
 
 /* Orbe Hero EXTREMO */
@@ -257,7 +272,7 @@ section p {
     height: 200px;
     background: conic-gradient(from 0deg, var(--color-accent1), var(--color-accent2), var(--color-accent3), var(--color-accent4), var(--color-accent1));
     border-radius: 50%;
-    box-shadow: var(--glow-extreme), inset 0 0 50px rgba(255, 255, 255, 0.2);
+    box-shadow: var(--glow-intense), inset 0 0 40px rgba(255, 255, 255, 0.2);
     animation: 
         orbPulseExtreme 2s infinite ease-in-out,
         orbRotate 10s linear infinite,
@@ -265,6 +280,7 @@ section p {
     position: relative;
     transform-style: preserve-3d;
     border: 3px solid rgba(255, 255, 255, 0.3);
+    will-change: transform;
 }
 
 .hero-orb::before {

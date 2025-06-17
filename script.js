@@ -4,9 +4,14 @@ document.addEventListener('DOMContentLoaded', () => {
     gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
 
     // Detectar si es móvil para optimizar animaciones
+    // --- CONFIGURACIÓN DE VELOCIDAD Y EFECTOS EXTREMOS ---
+    const EXTREME_SPEED = 0.3;
+    const ROTATION_INTENSITY = 360;
+    const SCALE_INTENSITY = 2;
+
+    // Detectar si es móvil para optimizar animaciones
     const isMobile = window.innerWidth <= 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     const speed = isMobile ? 0.5 : EXTREME_SPEED;
-    const intensity = isMobile ? 0.5 : 1;
 
     // CURSOR PERSONALIZADO PARA DESKTOP
     if (!isMobile) {
@@ -74,10 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- CONFIGURACIÓN DE VELOCIDAD Y EFECTOS EXTREMOS ---
-    const EXTREME_SPEED = 0.3;
-    const ROTATION_INTENSITY = 360;
-    const SCALE_INTENSITY = 2;
+
     
     // --- ELEMENTOS PRINCIPALES ---
     const heroSection = document.getElementById('hero');
@@ -86,27 +88,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const closingSection = document.getElementById('closing');
 
     // Hero elements
-    const heroOrb = heroSection.querySelector('.hero-orb');
-    const heroTitle = heroSection.querySelector('h1');
-    const heroParagraph = heroSection.querySelector('p');
+    let heroOrb, heroTitle, heroParagraph;
+    if (heroSection) {
+        heroOrb = heroSection.querySelector('.hero-orb');
+        heroTitle = heroSection.querySelector('h1');
+        heroParagraph = heroSection.querySelector('p');
+    }
 
     // Concept1 elements
-    const concept1Title = concept1Section.querySelector('h2');
-    const concept1Animation = concept1Section.querySelector('.neural-network-animation');
-    const concept1Paragraph = concept1Section.querySelector('p');
-    const nnNodes = concept1Section.querySelectorAll('.nn-node');
+    let concept1Title, concept1Animation, concept1Paragraph, nnNodes;
+    if (concept1Section) {
+        concept1Title = concept1Section.querySelector('h2');
+        concept1Animation = concept1Section.querySelector('.neural-network-animation');
+        concept1Paragraph = concept1Section.querySelector('p');
+        nnNodes = concept1Section.querySelectorAll('.nn-node');
+    }
 
     // Concept2 elements
-    const concept2Title = concept2Section.querySelector('h2');
-    const dataFlowContainer = concept2Section.querySelector('.data-flow-animation');
-    const flowParticles = concept2Section.querySelectorAll('.flow-particle');
-    const concept2Paragraph = concept2Section.querySelector('p');
+    let concept2Title, dataFlowContainer, flowParticles, concept2Paragraph;
+    if (concept2Section) {
+        concept2Title = concept2Section.querySelector('h2');
+        dataFlowContainer = concept2Section.querySelector('.data-flow-animation');
+        flowParticles = concept2Section.querySelectorAll('.flow-particle');
+        concept2Paragraph = concept2Section.querySelector('p');
+    }
 
     // Closing elements
-    const closingTitle = closingSection.querySelector('h2');
-    const closingContainer = closingSection.querySelector('.closing-animation-container');
-    const closingFragments = closingSection.querySelectorAll('.closing-fragment');
-    const closingParagraph = closingSection.querySelector('p');
+    let closingTitle, closingContainer, closingFragments, closingParagraph;
+    if (closingSection) {
+        closingTitle = closingSection.querySelector('h2');
+        closingContainer = closingSection.querySelector('.closing-animation-container');
+        closingFragments = closingSection.querySelectorAll('.closing-fragment');
+        closingParagraph = closingSection.querySelector('p');
+    }
 
     // --- ESTADOS INICIALES EXTREMOS ---
     gsap.set([concept1Section, concept2Section, closingSection], { 
@@ -154,17 +168,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- ANIMACIONES CONTINUAS DURANTE SCROLL ---
     
     // HERO ORBE - Efectos extremos mientras haces scroll
-    gsap.to(heroOrb, {
+    if (heroOrb) {
+        gsap.to(heroOrb, {
         rotation: 360,
         scale: 1.5,
         duration: 2,
         repeat: -1,
         yoyo: true,
         ease: "power2.inOut"
-    });
+        });
+    }
 
     // HERO SALIDA - Mientras haces scroll hacia abajo
-    gsap.timeline({
+    if (heroSection && heroOrb && heroTitle && heroParagraph) {
+        gsap.timeline({
         scrollTrigger: {
             trigger: heroSection,
             start: "top top",
@@ -196,6 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
+    }
 
     // CONCEPTO 1 ENTRADA - Animación extrema al hacer scroll
     gsap.timeline({
@@ -404,8 +422,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // FRAGMENTOS DE CIERRE - Animación extrema
     closingFragments.forEach((fragment, index) => {
-        const radius = 100;
-        const angle = (index / closingFragments.length) * Math.PI * 2;
+
         
         gsap.set(fragment, {
             width: 15 + Math.random() * 10,
