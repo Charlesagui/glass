@@ -813,12 +813,12 @@ footer {
 .data-flow-animation {
     position: relative;
     width: 90%;
-    max-width: 500px;
-    height: clamp(200px, 40vw, 350px);
+    max-width: 600px; /* Increased for better channel visibility */
+    height: clamp(250px, 40vw, 400px); /* Increased height */
     margin-bottom: 2rem;
     
     /* Contenedor glassmorphism */
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.6);
     border-radius: var(--border-radius);
     border: 2px solid rgba(0, 246, 255, 0.3);
     backdrop-filter: var(--blur-light);
@@ -830,61 +830,142 @@ footer {
     transform: translateZ(0);
 }
 
-/* Fondo animado del flujo */
-.data-flow-animation::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    
-    background: 
-        linear-gradient(45deg, 
-            transparent 30%, 
-            rgba(0, 246, 255, 0.1) 50%, 
-            transparent 70%
-        ),
-        linear-gradient(-45deg, 
-            transparent 30%, 
-            rgba(255, 0, 224, 0.1) 50%, 
-            transparent 70%
-        );
-    
-    /* Animación de flujo */
-    animation: dataFlowBg 6s ease-in-out infinite;
-    
-    /* Performance */
-    will-change: transform;
-    transform: translateZ(0);
+/* SVG styling for data flow */
+.data-flow-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
 }
 
-@keyframes dataFlowBg {
-    0%, 100% { 
-        transform: translate(-100%, -100%); 
-        opacity: 0.5; 
-    }
-    50% { 
-        transform: translate(100%, 100%); 
-        opacity: 1; 
-    }
+/* Data channels (pipes) */
+.data-channel {
+    filter: drop-shadow(0 0 4px currentColor);
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
-.flow-particle {
-    position: absolute;
-    border-radius: 50%;
-    
-    /* Glow effect */
-    box-shadow: 
-        0 0 10px currentColor,
-        0 0 20px currentColor,
-        inset 0 0 5px rgba(255, 255, 255, 0.3);
-    
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    
-    /* Performance critical - uses .gpu-accelerated class from HTML */
-    /* will-change and transform: translateZ(0) are covered by .gpu-accelerated */
-    z-index: 2;
+/* Enhanced channel types */
+.data-channel-primary {
+    animation: primaryPulse 3s ease-in-out infinite;
+}
+
+.data-channel-secondary {
+    animation: secondaryPulse 4s ease-in-out infinite;
+}
+
+.data-channel-tertiary {
+    animation: tertiaryPulse 5s ease-in-out infinite;
+}
+
+.data-channel-control {
+    animation: controlPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes primaryPulse {
+    0%, 100% { filter: drop-shadow(0 0 4px #00f6ff); }
+    50% { filter: drop-shadow(0 0 12px #00f6ff); }
+}
+
+@keyframes secondaryPulse {
+    0%, 100% { filter: drop-shadow(0 0 4px #ff00e0); }
+    50% { filter: drop-shadow(0 0 12px #ff00e0); }
+}
+
+@keyframes tertiaryPulse {
+    0%, 100% { filter: drop-shadow(0 0 4px #00ff88); }
+    50% { filter: drop-shadow(0 0 12px #00ff88); }
+}
+
+@keyframes controlPulse {
+    0%, 100% { filter: drop-shadow(0 0 4px #ffaa00); }
+    50% { filter: drop-shadow(0 0 12px #ffaa00); }
+}
+
+/* Data packets with protocol-specific styling */
+.data-packet-tcp {
+    filter: drop-shadow(0 0 6px #00f6ff);
+}
+
+.data-packet-udp {
+    filter: drop-shadow(0 0 5px #ff00e0);
+}
+
+.data-packet-icmp {
+    filter: drop-shadow(0 0 4px #00ff88);
+}
+
+.data-packet-http {
+    filter: drop-shadow(0 0 8px #ffaa00);
+}
+
+/* Network nodes with enhanced styling */
+.network-node-router {
+    filter: drop-shadow(0 0 10px #ff6b6b);
+}
+
+.network-node-switch {
+    filter: drop-shadow(0 0 8px #4ecdc4);
+}
+
+.network-node-firewall {
+    filter: drop-shadow(0 0 12px #ff9f43);
+}
+
+.network-node-server {
+    filter: drop-shadow(0 0 10px #0abde3);
+}
+
+.network-node-loadbalancer {
+    filter: drop-shadow(0 0 9px #ee5a24);
+}
+
+/* Bandwidth monitors */
+.bandwidth-monitors {
+    opacity: 0.9;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* Network grid animation */
+.network-grid {
+    animation: gridScan 8s linear infinite;
+}
+
+@keyframes gridScan {
+    0% { opacity: 0.1; }
+    50% { opacity: 0.4; }
+    100% { opacity: 0.1; }
+}
+
+/* Status indicators */
+.status-indicator {
+    animation: statusBlink 2s ease-in-out infinite;
+}
+
+@keyframes statusBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+/* Data packets */
+.data-packet {
+    filter: drop-shadow(0 0 6px currentColor);
+}
+
+/* Data nodes */
+.data-node-input {
+    filter: drop-shadow(0 0 8px #00f6ff);
+}
+
+.data-node-processor {
+    filter: drop-shadow(0 0 8px #ff00e0);
+}
+
+.data-node-output {
+    filter: drop-shadow(0 0 8px #00ff88);
+}
+
+.data-node-storage {
+    filter: drop-shadow(0 0 8px #ffffff);
 }
 
 /* ========================================
