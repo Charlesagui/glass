@@ -150,42 +150,38 @@ export const AnimationSystem = {
             return;
         }
 
-        container.innerHTML = '';
+        ScrollTrigger.create({
+            trigger: container,
+            start: "top 80%",
+            once: true,
+            onEnter: () => {
+                console.log('Data flow animation container entered viewport, creating animation.');
+                container.innerHTML = '';
         
-        const svgNS = 'http://www.w3.org/2000/svg';
-        const svg = document.createElementNS(svgNS, 'svg');
-        svg.setAttribute('width', '100%');
-        svg.setAttribute('height', '100%');
-        svg.setAttribute('viewBox', '0 0 800 400');
-        svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-        container.appendChild(svg);
+                const svgNS = 'http://www.w3.org/2000/svg';
+                const svg = document.createElementNS(svgNS, 'svg');
+                svg.setAttribute('width', '100%');
+                svg.setAttribute('height', '100%');
+                svg.setAttribute('viewBox', '0 0 800 400');
+                svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+                container.appendChild(svg);
 
-        // Crear gradientes
-        this.createGradients(svg);
-        
-        // Crear canales de datos
-        const channels = [
-            { 
-                path: 'M 50 100 Q 200 50 400 120 Q 600 190 750 150',
-                color: '#00f6ff'
-            },
-            { 
-                path: 'M 50 200 Q 150 180 300 220 Q 500 260 750 230',
-                color: '#ff00e0'
-            },
-            { 
-                path: 'M 50 300 Q 250 250 450 300 Q 650 350 750 310',
-                color: '#00ff88'
+                this.createGradients(svg);
+                
+                const channels = [
+                    { path: 'M 50 100 Q 200 50 400 120 Q 600 190 750 150', color: '#00f6ff' },
+                    { path: 'M 50 200 Q 150 180 300 220 Q 500 260 750 230', color: '#ff00e0' },
+                    { path: 'M 50 300 Q 250 250 450 300 Q 650 350 750 310', color: '#00ff88' }
+                ];
+
+                channels.forEach((channel, index) => {
+                    const createdPath = this.createDataChannel(svg, channel, index);
+                    this.createDataPackets(svg, channel, createdPath, index);
+                });
+
+                console.log('Data flow animation setup complete.');
             }
-        ];
-
-        // Dibujar canales
-        channels.forEach((channel, index) => {
-            this.createDataChannel(svg, channel, index);
-            this.createDataPackets(svg, channel, index);
         });
-
-        console.log('Data flow animation setup complete.');
     },
 
     setupNeuralNetworkAnimation() {
@@ -280,27 +276,34 @@ export const AnimationSystem = {
 
     createDataChannel(svg, channel, index) {
         const svgNS = 'http://www.w3.org/2000/svg';
-        
         const path = document.createElementNS(svgNS, 'path');
         path.setAttribute('d', channel.path);
-        path.setAttribute('stroke', channel.color);
-        path.setAttribute('stroke-width', '3');
+        path.setAttribute('stroke', 'rgba(255, 255, 255, 0.1)');
+        path.setAttribute('stroke-width', '2');
         path.setAttribute('fill', 'none');
-        path.setAttribute('opacity', '0.6');
-        path.setAttribute('stroke-linecap', 'round');
+        path.setAttribute('class', 'data-channel');
         svg.appendChild(path);
 
-        // Animar brillo del canal
-        gsap.to(path, {
-            opacity: 0.9,
-            duration: 2 + index * 0.5,
-            repeat: -1,
-            yoyo: true,
-            ease: 'sine.inOut'
+        // Obtener la longitud del path para la animación
+        const pathLength = path.getTotalLength();
+        
+        // Configuración inicial - path invisible
+        gsap.set(path, {
+            strokeDasharray: pathLength,
+            strokeDashoffset: pathLength
         });
+        
+        // Animación de dibujado del canal usando propiedades estándar SVG
+        gsap.to(path, {
+            strokeDashoffset: 0,
+            duration: 1.5,
+            ease: 'power2.inOut',
+            delay: index * 0.2
+        });
+        return path; // Devolver el path creado
     },
 
-    createDataPackets(svg, channel, channelIndex) {
+    createDataPackets(svg, channel, path, channelIndex) {
         const svgNS = 'http://www.w3.org/2000/svg';
         
         const createPacket = () => {
@@ -310,11 +313,8 @@ export const AnimationSystem = {
             packet.setAttribute('opacity', '0.8');
             svg.appendChild(packet);
 
-            const path = svg.children[channelIndex * 2 + 1]; // Skip gradients
-            const pathLength = path.getTotalLength();
-
             gsap.set(packet, { 
-                motionPath: { path: channel.path, autoRotate: false },
+                motionPath: { path: path, autoRotate: false },
                 transformOrigin: 'center'
             });
 
@@ -326,9 +326,9 @@ export const AnimationSystem = {
             });
 
             tl.fromTo(packet, 
-                { motionPath: { path: channel.path, start: 0 }, opacity: 0 },
+                { motionPath: { path: path, start: 0 }, opacity: 0 },
                 { 
-                    motionPath: { path: channel.path, start: 1 }, 
+                    motionPath: { path: path, end: 1, start: 0 }, 
                     opacity: 0.8,
                     duration: 3 + Math.random() * 2,
                     ease: 'none'
