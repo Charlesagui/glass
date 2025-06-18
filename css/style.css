@@ -319,9 +319,12 @@ p {
     position: relative; /* For positioning SVG absolutely if needed */
     width: 100%;
     max-width: 500px; /* Or adjust as needed */
-    height: clamp(250px, 45vw, 350px); /* Adjust height as needed */
+    height: clamp(280px, 45vw, 380px); /* Increased height for better spacing */
     margin: 2rem auto; /* Center it and provide some spacing */
     border: 1px dashed var(--color-accent2-transparent); /* Optional: for visualizing bounds during dev */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .neural-network-animation svg {
@@ -335,25 +338,33 @@ p {
     fill: var(--color-accent1-transparent-heavy);
     stroke: var(--color-accent1);
     stroke-width: 2px;
-    transition: fill var(--transition-fast), r var(--transition-fast);
-    r: 6px; /* Default radius */
+    transition: fill 0.1s ease, r 0.1s ease; /* Faster transitions for rapid firing */
+    r: 5px; /* Reduced default radius to match JS changes */
 }
 
 .nn-node-dynamic.active { /* When a signal passes */
     fill: var(--color-accent2);
-    r: 8px; /* Example: slightly larger radius */
+    stroke: #FFFFFF;
+    r: 7px; /* Adjusted to match smaller base radius */
+    filter: drop-shadow(0 0 8px var(--color-accent2));
 }
 
 /* Dynamic Threads (Connections) */
 .nn-thread {
     fill: none;
     stroke: var(--color-accent2-transparent-light);
-    stroke-width: 1.5px;
+    stroke-width: 1px; /* Thinner lines for cleaner look with rapid firing */
     stroke-linecap: round;
+    stroke-linejoin: round; /* Better curve rendering */
+    opacity: 0.6;
+    vector-effect: non-scaling-stroke; /* Consistent stroke width */
 }
 
 .nn-thread.firing { /* When a signal is actively passing */
-    stroke: #FFFFFF; /* Changed to white for firing threads */
+    stroke: #FFFFFF; /* White for firing threads */
+    stroke-width: 2px; /* Thicker when firing */
+    opacity: 1;
+    filter: drop-shadow(0 0 4px #FFFFFF);
     /* stroke-dasharray and stroke-dashoffset will be animated by JS */
 }
 

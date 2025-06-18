@@ -230,7 +230,7 @@ export const AnimationSystem = {
         svg.style.overflow = 'visible'; // Allow elements like glows to exceed SVG bounds if needed
         container.appendChild(svg);
 
-        const padding = { top: 20, right: 20, bottom: 20, left: 20 }; // Padding inside SVG
+        const padding = { top: 30, right: 30, bottom: 30, left: 30 }; // Increased padding to prevent overflow
         const svgWidth = container.offsetWidth;
         const svgHeight = container.offsetHeight;
         const usableWidth = svgWidth - padding.left - padding.right;
@@ -246,11 +246,11 @@ export const AnimationSystem = {
             { count: 16, type: 'output', color: 'var(--color-accent3, var(--color-accent1))' } 
         ];
 
-        const nodeRadius = 6;
+        const nodeRadius = 5; // Reduced node size for better centering
         const conceptualLayers = []; // This will group nodes by their conceptual layer
         const placedNodePositions = []; // Store {x, y} of nodes already placed for collision detection
-        const minDistance = nodeRadius * 2.5; // Min distance between node centers (radius * 2 + spacing)
-        const maxAttempts = 200; // Max attempts to find a non-colliding position
+        const minDistance = nodeRadius * 3; // Increased min distance between node centers
+        const maxAttempts = 300; // Increased max attempts to find a non-colliding position
 
         // Create nodes with random positions, ensuring no overlap
         layers.forEach((layer, layerIndex) => {
@@ -300,9 +300,100 @@ export const AnimationSystem = {
             conceptualLayers.push(layerNodes);
         });
 
+        // Helper function to check if a line intersects with a circle (node)
+        function lineIntersectsCircle(lineStart, lineEnd, circleCenter, radius) {
+            const A = lineStart.x;
+            const B = lineStart.y;
+            const C = lineEnd.x;
+            const D = lineEnd.y;
+            const E = circleCenter.x;
+            const F = circleCenter.y;
+            
+            const LAB = Math.sqrt(Math.pow(C - A, 2) + Math.pow(D - B, 2));
+            const Dx = (C - A) / LAB;
+            const Dy = (D - B) / LAB;
+            const t = Dx * (E - A) + Dy * (F - B);
+            const Ex = t * Dx + A;
+            const Ey = t * Dy + B;
+            const LEC = Math.sqrt(Math.pow(Ex - E, 2) + Math.pow(Ey - F, 2));
+            
+            return LEC <= radius && t >= 0 && t <= LAB;
+        }
+
+        // Helper function to find path around obstacles
+        function findPathAroundNodes(startNode, endNode, allNodes, nodeRadius) {
+            const start = {x: startNode.x, y: startNode.y};
+            const end = {x: endNode.x, y: endNode.y};
+            
+            // Check if direct path is clear
+            let pathClear = true;
+            for (const node of allNodes) {
+                if (node === startNode || node === endNode) continue;
+                if (lineIntersectsCircle(start, end, {x: node.x, y: node.y}, nodeRadius + 3)) {
+                    pathClear = false;
+                    break;
+                }
+            }
+            
+            if (pathClear) {
+                return `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
+            }
+            
+            // Find path around obstacles using control points
+            const midX = (start.x + end.x) / 2;
+            const midY = (start.y + end.y) / 2;
+            
+            // Try different curve approaches
+            const attempts = [
+                {x: midX, y: midY - 40}, // Curve above
+                {x: midX, y: midY + 40}, // Curve below
+                {x: midX - 40, y: midY}, // Curve left
+                {x: midX + 40, y: midY}, // Curve right
+                {x: midX - 30, y: midY - 30}, // Diagonal curves
+                {x: midX + 30, y: midY - 30},
+                {x: midX - 30, y: midY + 30},
+                {x: midX + 30, y: midY + 30}
+            ];
+            
+            for (const controlPoint of attempts) {
+                // Check if this curved path avoids all nodes
+                let curveClear = true;
+                const segments = 20; // Check curve in segments
+                
+                for (let i = 0; i <= segments; i++) {
+                    const t = i / segments;
+                    const curveX = (1-t)*(1-t)*start.x + 2*(1-t)*t*controlPoint.x + t*t*end.x;
+                    const curveY = (1-t)*(1-t)*start.y + 2*(1-t)*t*controlPoint.y + t*t*end.y;
+                    
+                    for (const node of allNodes) {
+                        if (node === startNode || node === endNode) continue;
+                        const distance = Math.sqrt(Math.pow(curveX - node.x, 2) + Math.pow(curveY - node.y, 2));
+                        if (distance <= nodeRadius + 2) {
+                            curveClear = false;
+                            break;
+                        }
+                    }
+                    if (!curveClear) break;
+                }
+                
+                if (curveClear) {
+                    return `M ${start.x} ${start.y} Q ${controlPoint.x} ${controlPoint.y} ${end.x} ${end.y}`;
+                }
+            }
+            
+            // Fallback to direct line if no clear curve found
+            return `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
+        }
+
+        // Collect all nodes for collision detection
+        const allNodes = [];
+        conceptualLayers.forEach(layer => {
+            layer.forEach(node => allNodes.push(node));
+        });
+
         const allPaths = [];
         if (conceptualLayers.length > 1) {
-            // Create connections based on conceptual layers, not visual position
+            // Create connections based on conceptual layers, avoiding node intersections
             for (let i = 0; i < conceptualLayers.length - 1; i++) {
                 const currentLayerNodes = conceptualLayers[i];
                 const nextLayerNodes = conceptualLayers[i+1];
@@ -310,7 +401,10 @@ export const AnimationSystem = {
                     nextLayerNodes.forEach(endNode => {
                         const path = document.createElementNS(svgNS, 'path');
                         path.setAttribute('class', 'nn-thread');
-                        path.setAttribute('d', `M ${startNode.x} ${startNode.y} L ${endNode.x} ${endNode.y}`);
+                        
+                        const pathData = findPathAroundNodes(startNode, endNode, allNodes, nodeRadius);
+                        path.setAttribute('d', pathData);
+                        
                         svg.insertBefore(path, svg.firstChild); // Draw paths behind nodes
                         allPaths.push({path, startNode, endNode, direction: 'L-R'});
                     });
@@ -322,8 +416,11 @@ export const AnimationSystem = {
                 currentLayerNodesRL.forEach(startNodeRL => {
                     nextLayerNodesRL.forEach(endNodeRL => {
                         const pathRL = document.createElementNS(svgNS, 'path');
-                        pathRL.setAttribute('class', 'nn-thread nn-thread-rl'); // Added a class for R-L if specific styling needed
-                        pathRL.setAttribute('d', `M ${startNodeRL.x} ${startNodeRL.y} L ${endNodeRL.x} ${endNodeRL.y}`);
+                        pathRL.setAttribute('class', 'nn-thread nn-thread-rl');
+                        
+                        const pathDataRL = findPathAroundNodes(startNodeRL, endNodeRL, allNodes, nodeRadius);
+                        pathRL.setAttribute('d', pathDataRL);
+                        
                         svg.insertBefore(pathRL, svg.firstChild);
                         allPaths.push({path: pathRL, startNode: startNodeRL, endNode: endNodeRL, direction: 'R-L'});
                     });
@@ -347,15 +444,17 @@ export const AnimationSystem = {
                 onComplete: () => {
                     path.classList.remove('firing');
                     startNode.element.classList.remove('active');
-                    endNode.element.classList.remove('active'); // Remove active from end node too
-                    // Schedule next firing for this path or another one
-                    // setTimeout(() => fireRandomThread(), 1000 + Math.random() * 2000);
+                    endNode.element.classList.remove('active');
                 }
             });
 
-            tl.to(path, { strokeDashoffset: 0, duration: 0.25 + Math.random() * 0.25, ease: 'power1.in' }) // Faster duration
-              .call(() => endNode.element.classList.add('active'), [], ">-0.05") // Adjust timing if needed
-              .to(path, { strokeDashoffset: -length, duration: 0.25 + Math.random() * 0.25, ease: 'power1.out' }); // Faster duration
+            // Adjust timing based on path length for consistent speed
+            const baseSpeed = 300; // pixels per second
+            const duration = Math.max(0.1, Math.min(0.4, length / baseSpeed));
+            
+            tl.to(path, { strokeDashoffset: 0, duration: duration * 0.6, ease: 'power1.in' })
+              .call(() => endNode.element.classList.add('active'), [], ">-0.02")
+              .to(path, { strokeDashoffset: -length, duration: duration * 0.4, ease: 'power1.out' });
         }
 
         // Function to pick and fire a random thread
@@ -367,12 +466,12 @@ export const AnimationSystem = {
 
         // Start a few initial animations and then set an interval for more
         if (allPaths.length > 0) {
-            const initialFirings = Math.min(5, allPaths.length); // Increase initial firings
+            const initialFirings = Math.min(8, allPaths.length); // More initial firings for better effect
             for(let i=0; i < initialFirings; i++) {
-                 setTimeout(() => fireRandomThread(), Math.random() * 500); // Faster initial timeout
+                 setTimeout(() => fireRandomThread(), Math.random() * 300); // Much faster initial timeout
             }
             // Periodically fire more threads
-            setInterval(fireRandomThread, 500 + Math.random() * 750); // Faster interval
+            setInterval(fireRandomThread, 200 + Math.random() * 300); // Much faster interval for rapid connections
         }
 
         console.log('Dynamic neural network animation setup complete.');
