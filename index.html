@@ -19,7 +19,9 @@
     <title>IA Deslumbrante</title>
     
     <!-- Stylesheet principal -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- No usamos archivo CSS externo para el cursor -->
     
     <!-- Preload de recursos críticos -->
     <link rel="modulepreload" href="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js">
@@ -140,6 +142,14 @@
                 script.onload = () => {
                     loaded++;
                     if (loaded === scripts.length) {
+                        // Asegurarnos de que todos los plugins estén registrados correctamente
+                        if (window.gsap) {
+                            // En GSAP 3, CSSPlugin ya está incluido en el core
+                            if (window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
+                            if (window.MotionPathPlugin) gsap.registerPlugin(MotionPathPlugin);
+                            console.log('Plugins de GSAP registrados correctamente');
+                        }
+                        
                         // Cargar script principal cuando GSAP esté listo
                         const mainScript = document.createElement('script');
                         mainScript.type = 'module';
@@ -191,5 +201,7 @@
             navigator.serviceWorker.register('/sw.js').catch(console.warn);
         }
     </script>
+    
+    <!-- Se ha restaurado el cursor estándar del sistema -->
 </body>
 </html>

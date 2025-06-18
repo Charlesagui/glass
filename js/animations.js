@@ -52,7 +52,6 @@ export const AnimationSystem = {
         gsap.config({
             nullTargetWarn: false,
             autoSleep: 60,
-            force3D: 'auto',
             autoKernelSize: 10
         });
         
@@ -60,8 +59,7 @@ export const AnimationSystem = {
         gsap.defaults({
             ease: "power2.out",
             duration: 0.8,
-            overwrite: 'auto',
-            force3D: true
+            overwrite: 'auto'
         });
         
         this.animateHero();
@@ -89,16 +87,14 @@ export const AnimationSystem = {
                 duration: 40,
                 repeat: -1,
                 ease: 'none',
-                transformOrigin: 'center',
-                force3D: true
+                transformOrigin: 'center'
             }, 0);
             heroTimeline.to(orb, {
                 scale: 1.05,
                 duration: 3,
                 repeat: -1,
                 yoyo: true,
-                ease: 'sine.inOut',
-                force3D: true
+                ease: 'sine.inOut'
             }, 0);
             this.timelines.hero = heroTimeline;
             this.animations.push(heroTimeline);
@@ -147,7 +143,7 @@ export const AnimationSystem = {
         if (!containers.length) return;
         
         const flowTl = gsap.timeline({
-            defaults: { ease: 'none', force3D: true },
+            defaults: { ease: 'none' },
             onComplete: () => {
                 containers.forEach(container => { container.style.willChange = 'auto'; });
             }
@@ -190,7 +186,7 @@ export const AnimationSystem = {
                 flowTl.to(particle, {
                     x: `+=${x}%`, y: `+=${y}%`, opacity: 0.3,
                     duration: duration, delay: delay, ease: 'sine.inOut',
-                    repeat: -1, yoyo: true, force3D: true
+                    repeat: -1, yoyo: true
                 }, containerIndex * 0.1);
             }
         });
@@ -205,7 +201,7 @@ export const AnimationSystem = {
             if (!nnContainers.length) return;
             
             const masterTl = gsap.timeline({
-                defaults: { ease: 'power2.inOut', force3D: true },
+                defaults: { ease: 'power2.inOut' },
                 onComplete: () => {
                     nnContainers.forEach(container => { container.style.willChange = 'auto'; });
                 }

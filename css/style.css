@@ -1,8 +1,6 @@
 /* IA DESLUMBRANTE - ESTILOS ULTRA OPTIMIZADOS */
 
-body {
-    cursor: auto !important;
-}
+/* Se usa el cursor estándar del sistema */
 /* Performance-first CSS con animaciones GPU-accelerated */
 
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;700&display=swap');
@@ -62,6 +60,8 @@ html {
     -ms-overflow-style: none;
     scrollbar-width: none;
     height: 100%;
+    width: 100%;
+    max-width: 100vw; /* Asegurar que no exceda el ancho de la ventana */
 }
 
 /* Ocultar scrollbar para Chrome, Safari y Opera */
@@ -213,9 +213,13 @@ h1, h2, h3 {
 }
 
 h1 {
-    font-size: clamp(2.5rem, 8vw, 4rem);
+    font-size: clamp(2rem, 8vw, 4rem);
     font-weight: 900;
     line-height: 1.1;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    padding: 0 1rem;
 }
 
 h2 {
@@ -223,6 +227,7 @@ h2 {
     font-weight: 700;
     line-height: 1.2;
 }
+
 p {
     font-size: clamp(1rem, 2.5vw, 1.3rem);
     line-height: 1.8;
@@ -590,6 +595,7 @@ p {
         transform: translateY(-50%) scaleX(1.1); 
     }
 }
+
 /* ========================================
    FLUJO DE DATOS - OPTIMIZADO
    ======================================== */
@@ -834,6 +840,20 @@ p {
 @media (max-width: 480px) {
     header, section {
         padding: 1rem;
+    }
+    
+    h1 {
+        font-size: clamp(1.5rem, 6vw, 2.5rem);
+        letter-spacing: 0.05em;
+        word-break: break-word;
+        hyphens: auto;
+    }
+    
+    #hero h1 {
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
     }
     
     .neural-network-animation {

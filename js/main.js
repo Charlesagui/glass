@@ -2,7 +2,7 @@
 
 import { config, state } from './config.js';
 import { Utils } from './utils.js';
-import { CursorSystem } from './cursor.js';
+// Cursor personalizado eliminado
 import { ScrollSystem } from './scroll.js';
 import { AnimationSystem } from './animations.js';
 import { setupLazyLoading } from './lazyLoad.js';
@@ -22,7 +22,7 @@ const init = () => {
     console.log('🚀 IA Deslumbrante - App Visible y Lazy Loading Configurado (Modular)');
     
     try {
-        CursorSystem.init();
+        // CursorSystem eliminado
         ScrollSystem.init();
         
         // AnimationSystem.init() will be called after GSAP is confirmed loaded in startApp
@@ -85,6 +85,7 @@ const startApp = () => {
     const initializeWithGsap = () => {
         if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
             try {
+                // No intentar registrar CSSPlugin explícitamente, ya viene incluido en el core de GSAP
                 gsap.registerPlugin(ScrollTrigger);
                 AnimationSystem.init(); // Initialize animations now that GSAP is ready
             } catch (error) {
@@ -107,6 +108,14 @@ const startApp = () => {
         
         gsapScript.onload = () => {
             console.log('GSAP cargado.');
+            // Asegurándonos de que GSAP esté completamente cargado antes de continuar
+            if (typeof gsap === 'undefined') {
+                console.error('GSAP no se cargó correctamente');
+                initializeWithGsap();
+                return;
+            }
+            
+            // Cargar todos los plugins necesarios en un solo lugar
             const stScript = document.createElement('script');
             stScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js';
             stScript.async = true;
@@ -144,7 +153,7 @@ const publicAPI = {
     config,
     state,
     utils: Utils,
-    CursorSystem,
+    // CursorSystem eliminado,
     ScrollSystem,
     AnimationSystem,
     setupLazyLoading
