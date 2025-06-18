@@ -27,7 +27,6 @@ export const AnimationSystem = {
             try {
                 gsap.registerPlugin(ScrollTrigger);
                 this.setupGSAPAnimations();
-                // this.setupPerformanceMonitoring(); // This was in the original, but definition not provided
             } catch (error) {
                 console.error('Error initializing GSAP:', error);
                 this.initFallbackAnimations();
@@ -44,18 +43,15 @@ export const AnimationSystem = {
     initReducedMotion() {
         console.log('Reduced motion enabled, animations will be minimal.');
         document.body.classList.add('reduced-motion');
-        // Add any specific logic for reduced motion state
     },
 
     setupGSAPAnimations() {
-        // Optimized global configuration
         gsap.config({
             nullTargetWarn: false,
             autoSleep: 60,
             autoKernelSize: 10
         });
         
-        // Set default animation properties
         gsap.defaults({
             ease: "power2.out",
             duration: 0.8,
@@ -67,7 +63,8 @@ export const AnimationSystem = {
         requestIdleCallback(() => {
             this.animateSections();
             this.animateElements();
-            this.animateFlowParticles_setup(); // Renamed function call
+            this.animateFlowParticles_setup();
+            this.animateClosingFragments();
         });
     },
 
@@ -80,7 +77,6 @@ export const AnimationSystem = {
         const subtitle = hero.querySelector('p');
         
         if (orb) {
-            orb.style.willChange = 'transform, opacity';
             const heroTimeline = gsap.timeline({ defaults: { ease: 'power2.inOut' } });
             heroTimeline.to(orb, {
                 rotation: 360,
@@ -116,29 +112,42 @@ export const AnimationSystem = {
 
     animateSections() {
         const sections = document.querySelectorAll('section');
-        sections.forEach((section, index) => {
+        sections.forEach((section) => {
             const title = section.querySelector('h2');
             const content = section.querySelector('p');
             const animation = section.querySelector('.neural-network-animation, .data-flow-animation, .closing-animation-container');
-            
-            gsap.set([title, content, animation], { y: 50, opacity: 0 });
-            
+            const elementsToAnimate = [title, content, animation].filter(el => el);
+
+            gsap.set(elementsToAnimate, { y: 30, opacity: 0 });
+
             const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: section,
                     start: "top 80%",
-                    end: "top 20%",
-                    toggleActions: "play none none reverse"
+                    end: "bottom 20%", 
+                    scrub: 1,
                 }
             });
-            
-            if (title) tl.to(title, { y: 0, opacity: 1, duration: 0.6 });
-            if (animation) tl.to(animation, { y: 0, opacity: 1, duration: 0.8 }, "-=0.4");
-            if (content) tl.to(content, { y: 0, opacity: 1, duration: 0.6 }, "-=0.3");
+
+            tl.to(elementsToAnimate, {
+                y: 0,
+                opacity: 1,
+                stagger: 0.2,
+                ease: "power2.out"
+            })
+            .to(elementsToAnimate, { // Hold state
+                opacity: 1
+            })
+            .to(elementsToAnimate, {
+                y: -30,
+                opacity: 0,
+                stagger: 0.2,
+                ease: "power2.in"
+            });
         });
     },
 
-    animateFlowParticles_setup() { // Renamed function (from lines 477-563)
+    animateFlowParticles_setup() {
         const containers = document.querySelectorAll('.data-flow-animation');
         if (!containers.length) return;
         
@@ -150,8 +159,6 @@ export const AnimationSystem = {
         });
         
         containers.forEach((container, containerIndex) => {
-            container.style.willChange = 'transform, opacity';
-            container.style.transform = 'translateZ(0)';
             container.innerHTML = '';
             
             const rect = container.getBoundingClientRect();
@@ -174,8 +181,8 @@ export const AnimationSystem = {
                     width: `${size}px`, height: `${size}px`,
                     background: `hsl(${180 + Math.random() * 60}, 80%, 60%)`,
                     borderRadius: '50%', left: `${posX}%`, top: `${posY}%`,
-                    willChange: 'transform, opacity', pointerEvents: 'none',
-                    opacity: 0.6, filter: 'blur(0.5px)', transform: 'translateZ(0)', zIndex: 1
+                    pointerEvents: 'none',
+                    opacity: 0.6, filter: 'blur(0.5px)', zIndex: 1
                 });
                 container.appendChild(particle);
                 
@@ -208,20 +215,15 @@ export const AnimationSystem = {
             });
             
             nnContainers.forEach((container, containerIndex) => {
-                container.style.willChange = 'transform, opacity';
-                container.style.transform = 'translateZ(0)';
-                
                 const nodes = container.querySelectorAll('.nn-node');
                 nodes.forEach((node, nodeIndex) => {
-                    node.style.willChange = 'transform, opacity';
-                    node.style.transform = 'translateZ(0)';
                     masterTl.to(node, {
                         scale: 1.15, duration: 2, repeat: -1, yoyo: true,
                         ease: 'sine.inOut', delay: nodeIndex * 0.1
                     }, containerIndex * 0.1);
                 });
                 
-                const connections = container.querySelectorAll('.nn-connections-1, .nn-connections-2');
+                const connections = container.querySelectorAll('.nn-connections');
                 connections.forEach((conn, connIndex) => {
                     conn.style.willChange = 'opacity';
                     masterTl.to(conn, {
@@ -232,38 +234,11 @@ export const AnimationSystem = {
             });
             this.timelines.neuralNetwork = masterTl;
             this.animations.push(masterTl);
-            this.setupHoverEffects();
             return masterTl;
         } catch (error) {
             console.error('Error in animateElements:', error);
             this.initFallbackAnimations();
         }
-    },
-
-    setupHoverEffects() {
-        const interactiveElements = document.querySelectorAll('.interactive');
-        interactiveElements.forEach(el => {
-            if (el.dataset.hoverInitialized) return;
-            el.dataset.hoverInitialized = 'true';
-            el.style.willChange = 'transform, opacity';
-            el.style.transform = 'translateZ(0)';
-            
-            const hoverTl = gsap.timeline({ paused: true });
-            hoverTl.to(el, { scale: 1.05, duration: 0.3, ease: 'power2.out' });
-            
-            this.hoverAnimations.set(el, hoverTl);
-            
-            // Store handlers for removal in cleanup
-            el._mouseEnterHandler = () => hoverTl.play();
-            el._mouseLeaveHandler = () => hoverTl.reverse();
-            el._touchStartHandler = () => hoverTl.play();
-            el._touchEndHandler = () => hoverTl.reverse();
-
-            el.addEventListener('mouseenter', el._mouseEnterHandler);
-            el.addEventListener('mouseleave', el._mouseLeaveHandler);
-            el.addEventListener('touchstart', el._touchStartHandler);
-            el.addEventListener('touchend', el._touchEndHandler);
-        });
     },
 
     cleanup() {
@@ -291,35 +266,6 @@ export const AnimationSystem = {
         
         document.querySelectorAll('[style*="will-change"]').forEach(el => {
             el.style.willChange = 'auto';
-        });
-
-        // These calls were at the end of the original cleanup. 
-        // It's unusual to start animations in cleanup, but preserving behavior.
-        this.animateFlowParticles_dynamic(); // Renamed function call
-        this.animateClosingFragments();
-    },
-
-    animateFlowParticles_dynamic() { // Renamed function (from lines 758-789)
-        const particles = document.querySelectorAll('.flow-particle'); // This might conflict if previous particles aren't cleared
-        const colors = ['#00f6ff', '#ff00e0', '#00ff88', '#ff4400'];
-        
-        particles.forEach((particle, index) => {
-            const size = Utils.map(Math.random(), 0, 1, 6, 14);
-            gsap.set(particle, {
-                width: size, height: size,
-                backgroundColor: colors[index % colors.length],
-                x: Math.random() * 200, y: Math.random() * 100,
-                borderRadius: '50%',
-                boxShadow: `0 0 10px ${colors[index % colors.length]}`
-            });
-            gsap.to(particle, {
-                x: `+=${Utils.map(Math.random(), 0, 1, -100, 100)}`,
-                y: `+=${Utils.map(Math.random(), 0, 1, -50, 50)}`,
-                scale: Utils.map(Math.random(), 0, 1, 0.8, 1.4),
-                duration: Utils.map(Math.random(), 0, 1, 3, 6),
-                repeat: -1, yoyo: true, ease: "sine.inOut",
-                delay: Math.random() * 2
-            });
         });
     },
 

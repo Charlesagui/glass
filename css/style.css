@@ -52,28 +52,36 @@
     padding: 0;
 }
 
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+
+.gpu-accelerated {
+    transform: translateZ(0);
+    will-change: transform, opacity; /* Common properties to animate */
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden; /* Safari */
+}
+
 html {
     scroll-behavior: smooth;
     overflow-x: hidden;
     overflow-y: auto; /* Asegurar que el scroll vertical esté habilitado */
-    /* Ocultar scrollbar de forma efectiva */
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+    /* Scrollbar hiding handled globally below */
     height: 100%;
     width: 100%;
     max-width: 100vw; /* Asegurar que no exceda el ancho de la ventana */
 }
 
-/* Ocultar scrollbar para Chrome, Safari y Opera */
-html::-webkit-scrollbar,
-body::-webkit-scrollbar,
+/* Ocultar scrollbar de forma efectiva y global */
+/* Para WebKit (Chrome, Safari, Opera) */
 *::-webkit-scrollbar {
     width: 0 !important;
     display: none !important;
 }
 
-/* Ocultar scrollbar para IE, Edge y Firefox */
-html, body, * {
+/* Para IE, Edge y Firefox (y otros navegadores que lo soporten) */
+* {
     -ms-overflow-style: none !important;  /* IE y Edge */
     scrollbar-width: none !important;     /* Firefox */
 }
@@ -86,8 +94,7 @@ body {
         radial-gradient(circle at 80% 20%, rgba(255, 0, 224, 0.1) 0%, transparent 50%);
     background-attachment: fixed;
     color: var(--color-text-primary);
-    overflow-x: hidden;
-    overflow-y: auto; /* Permitir scroll vertical también en body */
+    /* Overflow controlled by html element */
     line-height: 1.6;
     height: 100%; /* Asegurar que body ocupe todo el alto disponible */
     margin: 0;
@@ -283,9 +290,7 @@ p {
     /* Performance optimizations */
     contain: content;
     content-visibility: auto;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
+    /* Font smoothing inherited from body */
     
     /* Background effects */
     background: 
@@ -334,8 +339,6 @@ p {
     box-shadow: var(--glow-intense);
     
     /* Performance critical */
-    will-change: transform;
-    transform: translateZ(0);
     transform-style: preserve-3d;
     
     /* Posición relativa para pseudo-elementos */
@@ -513,9 +516,9 @@ p {
     
     position: relative;
     
-    /* Performance critical */
-    will-change: transform, filter;
-    transform: translateZ(0);
+    /* Performance critical - uses .gpu-accelerated class from HTML */
+    /* transform: translateZ(0); is covered by .gpu-accelerated */
+    will-change: filter; /* 'transform' part covered by .gpu-accelerated */
     transform-style: preserve-3d;
 }
 
@@ -558,8 +561,7 @@ p {
 }
 
 /* Conexiones entre nodos */
-.nn-connections-1::before,
-.nn-connections-2::before {
+.nn-connections::before {
     content: '';
     position: absolute;
     width: clamp(30px, 8vw, 50px);
@@ -672,9 +674,8 @@ p {
     
     border: 1px solid rgba(255, 255, 255, 0.2);
     
-    /* Performance critical */
-    will-change: transform, opacity;
-    transform: translateZ(0);
+    /* Performance critical - uses .gpu-accelerated class from HTML */
+    /* will-change and transform: translateZ(0) are covered by .gpu-accelerated */
     z-index: 2;
 }
 
@@ -762,9 +763,8 @@ p {
     
     border: 1px solid rgba(255, 255, 255, 0.3);
     
-    /* Performance critical para órbitas */
-    will-change: transform;
-    transform: translateZ(0);
+    /* Performance critical para órbitas - uses .gpu-accelerated class from HTML */
+    /* will-change and transform: translateZ(0) are covered by .gpu-accelerated */
     z-index: 3;
 }
 

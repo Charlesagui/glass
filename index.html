@@ -22,9 +22,6 @@
     <link rel="stylesheet" href="css/style.css">
     
     <!-- No usamos archivo CSS externo para el cursor -->
-    
-    <!-- Preload de recursos críticos -->
-    <link rel="modulepreload" href="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js">
 </head>
 <body class="loading">
     <!-- HERO SECTION -->
@@ -48,8 +45,8 @@
                     <div class="nn-node node-input gpu-accelerated" aria-label="Nodo de entrada 3"></div>
                 </div>
                 
-                <!-- Conexiones primera capa -->
-                <div class="nn-connections-1" aria-hidden="true"></div>
+                <!-- Conexiones -->
+                <div class="nn-connections" aria-hidden="true"></div>
                 
                 <!-- Capa oculta -->
                 <div class="nn-layer">
@@ -59,8 +56,8 @@
                     <div class="nn-node node-hidden gpu-accelerated" aria-label="Nodo oculto 4"></div>
                 </div>
                 
-                <!-- Conexiones segunda capa -->
-                <div class="nn-connections-2" aria-hidden="true"></div>
+                <!-- Conexiones -->
+                <div class="nn-connections" aria-hidden="true"></div>
                 
                 <!-- Capa de salida -->
                 <div class="nn-layer">
@@ -160,13 +157,8 @@
                 };
                 script.onerror = () => {
                     console.warn(`Failed to load script: ${src}`);
-                    // Fallback sin GSAP
-                    if (loaded === 0) {
-                        const fallbackScript = document.createElement('script');
-                        fallbackScript.src = 'script.js';
-                        fallbackScript.defer = true;
-                        document.head.appendChild(fallbackScript);
-                    }
+                    // GSAP failed to load, animations might be affected.
+                    // Consider a more robust fallback or error indication if critical.
                 };
                 document.head.appendChild(script);
             });
