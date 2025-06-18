@@ -308,9 +308,9 @@ export const AnimationSystem = {
         
         const createPacket = () => {
             const packet = document.createElementNS(svgNS, 'circle');
-            packet.setAttribute('r', '4');
+            packet.setAttribute('r', '14'); // Aumentado de 4 a 7 para mayor visibilidad
             packet.setAttribute('fill', channel.color);
-            packet.setAttribute('opacity', '0.8');
+            packet.setAttribute('opacity', '0.9'); // Aumentado a 0.9 para mayor brillo
             svg.appendChild(packet);
 
             gsap.set(packet, { 
@@ -330,7 +330,7 @@ export const AnimationSystem = {
                 { 
                     motionPath: { path: path, end: 1, start: 0 }, 
                     opacity: 0.8,
-                    duration: 3 + Math.random() * 2,
+                    duration: 0.2 + Math.random() * 2,
                     ease: 'none'
                 }
             );
