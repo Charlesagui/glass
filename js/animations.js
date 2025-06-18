@@ -65,6 +65,7 @@ export const AnimationSystem = {
             this.animateElements();
             this.animateFlowParticles_setup();
             this.animateClosingFragments();
+            this.setupDynamicNeuralNetworkAnimation(); // New call
         });
     },
 
@@ -200,6 +201,181 @@ export const AnimationSystem = {
         this.timelines.flowParticles_setup = flowTl;
         this.animations.push(flowTl);
         return flowTl;
+    },
+
+    setupDynamicNeuralNetworkAnimation() {
+        console.log('Setting up dynamic neural network animation...');
+        const container = document.querySelector('.neural-network-animation');
+        if (!container) {
+            console.warn('Neural network animation container not found.');
+            return;
+        }
+
+        // Ensure container is visible and has dimensions
+        if (container.offsetWidth === 0 || container.offsetHeight === 0) {
+            console.warn('Neural network animation container has no dimensions. Ensure it is visible.');
+            // Optionally, use IntersectionObserver or wait for visibility if this is a common issue
+            // For now, we'll return if not visible/sized.
+            return;
+        }
+
+        container.innerHTML = ''; // Clear previous content
+
+        const svgNS = 'http://www.w3.org/2000/svg';
+        const svg = document.createElementNS(svgNS, 'svg');
+        svg.setAttribute('class', 'dynamic-neural-network-svg');
+        svg.setAttribute('width', '100%');
+        svg.setAttribute('height', '100%');
+        svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+        svg.style.overflow = 'visible'; // Allow elements like glows to exceed SVG bounds if needed
+        container.appendChild(svg);
+
+        const padding = { top: 20, right: 20, bottom: 20, left: 20 }; // Padding inside SVG
+        const svgWidth = container.offsetWidth;
+        const svgHeight = container.offsetHeight;
+        const usableWidth = svgWidth - padding.left - padding.right;
+        const usableHeight = svgHeight - padding.top - padding.bottom;
+
+        console.log('[NN Animation Debug] Container WxH:', container.offsetWidth, 'x', container.offsetHeight);
+        console.log('[NN Animation Debug] SVG WxH:', svgWidth, 'x', svgHeight);
+        console.log('[NN Animation Debug] Usable WxH:', usableWidth, 'x', usableHeight);
+
+        const layers = [
+            { count: 16, type: 'input', color: 'var(--color-accent1)' }, 
+            { count: 18, type: 'hidden', color: 'var(--color-accent2)' }, 
+            { count: 16, type: 'output', color: 'var(--color-accent3, var(--color-accent1))' } 
+        ];
+
+        const nodeRadius = 6;
+        const conceptualLayers = []; // This will group nodes by their conceptual layer
+        const placedNodePositions = []; // Store {x, y} of nodes already placed for collision detection
+        const minDistance = nodeRadius * 2.5; // Min distance between node centers (radius * 2 + spacing)
+        const maxAttempts = 200; // Max attempts to find a non-colliding position
+
+        // Create nodes with random positions, ensuring no overlap
+        layers.forEach((layer, layerIndex) => {
+            const layerNodes = [];
+            for (let i = 0; i < layer.count; i++) {
+                let x, y, validPosition = false;
+                let attempts = 0;
+
+                while (!validPosition && attempts < maxAttempts) {
+                    // Generate coordinates that account for node radius to stay within bounds
+                    x = padding.left + nodeRadius + Math.random() * (usableWidth - nodeRadius * 2);
+                    y = padding.top + nodeRadius + Math.random() * (usableHeight - nodeRadius * 2);
+
+                    // Check for collision with already placed nodes
+                    let hasCollision = false;
+                    for (const pos of placedNodePositions) {
+                        const distance = Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2));
+                        if (distance < minDistance) {
+                            hasCollision = true;
+                            break;
+                        }
+                    }
+
+                    if (!hasCollision) {
+                        validPosition = true;
+                    }
+                    attempts++;
+                }
+
+                if (!validPosition) {
+                    console.warn(`Could not find a valid position for node L${layerIndex}, N${i} after ${maxAttempts} attempts. It may overlap.`);
+                }
+
+                placedNodePositions.push({ x, y });
+
+                const node = document.createElementNS(svgNS, 'circle');
+                node.setAttribute('class', `nn-node-dynamic nn-node-${layer.type}`);
+                node.setAttribute('cx', x);
+                node.setAttribute('cy', y);
+                node.setAttribute('r', nodeRadius);
+                svg.appendChild(node);
+
+                const nodeData = { element: node, x, y, layerIndex, indexInLayer: i };
+                layerNodes.push(nodeData);
+                console.log(`[NN Animation Debug] Node: L${layerIndex}, N${i} at x=${x.toFixed(2)}, y=${y.toFixed(2)} (attempts: ${attempts})`);
+            }
+            conceptualLayers.push(layerNodes);
+        });
+
+        const allPaths = [];
+        if (conceptualLayers.length > 1) {
+            // Create connections based on conceptual layers, not visual position
+            for (let i = 0; i < conceptualLayers.length - 1; i++) {
+                const currentLayerNodes = conceptualLayers[i];
+                const nextLayerNodes = conceptualLayers[i+1];
+                currentLayerNodes.forEach(startNode => {
+                    nextLayerNodes.forEach(endNode => {
+                        const path = document.createElementNS(svgNS, 'path');
+                        path.setAttribute('class', 'nn-thread');
+                        path.setAttribute('d', `M ${startNode.x} ${startNode.y} L ${endNode.x} ${endNode.y}`);
+                        svg.insertBefore(path, svg.firstChild); // Draw paths behind nodes
+                        allPaths.push({path, startNode, endNode, direction: 'L-R'});
+                    });
+                });
+
+                // Create R-L paths (from nextLayer to currentLayer)
+                const currentLayerNodesRL = conceptualLayers[i+1]; // These are 'start' for R-L
+                const nextLayerNodesRL = conceptualLayers[i];    // These are 'end' for R-L
+                currentLayerNodesRL.forEach(startNodeRL => {
+                    nextLayerNodesRL.forEach(endNodeRL => {
+                        const pathRL = document.createElementNS(svgNS, 'path');
+                        pathRL.setAttribute('class', 'nn-thread nn-thread-rl'); // Added a class for R-L if specific styling needed
+                        pathRL.setAttribute('d', `M ${startNodeRL.x} ${startNodeRL.y} L ${endNodeRL.x} ${endNodeRL.y}`);
+                        svg.insertBefore(pathRL, svg.firstChild);
+                        allPaths.push({path: pathRL, startNode: startNodeRL, endNode: endNodeRL, direction: 'R-L'});
+                    });
+                });
+            }
+        }
+
+        // Animation function for a single thread firing
+        function fireThread(pathObj) {
+            const { path, startNode, endNode } = pathObj;
+            const length = path.getTotalLength();
+            if (length === 0) return; // Skip if path has no length (e.g., overlapping nodes)
+
+            gsap.set(path, { strokeDasharray: length, strokeDashoffset: length });
+            
+            const tl = gsap.timeline({
+                onStart: () => {
+                    path.classList.add('firing');
+                    startNode.element.classList.add('active');
+                },
+                onComplete: () => {
+                    path.classList.remove('firing');
+                    startNode.element.classList.remove('active');
+                    endNode.element.classList.remove('active'); // Remove active from end node too
+                    // Schedule next firing for this path or another one
+                    // setTimeout(() => fireRandomThread(), 1000 + Math.random() * 2000);
+                }
+            });
+
+            tl.to(path, { strokeDashoffset: 0, duration: 0.25 + Math.random() * 0.25, ease: 'power1.in' }) // Faster duration
+              .call(() => endNode.element.classList.add('active'), [], ">-0.05") // Adjust timing if needed
+              .to(path, { strokeDashoffset: -length, duration: 0.25 + Math.random() * 0.25, ease: 'power1.out' }); // Faster duration
+        }
+
+        // Function to pick and fire a random thread
+        function fireRandomThread() {
+            if (allPaths.length === 0) return;
+            const randomIndex = Math.floor(Math.random() * allPaths.length);
+            fireThread(allPaths[randomIndex]);
+        }
+
+        // Start a few initial animations and then set an interval for more
+        if (allPaths.length > 0) {
+            const initialFirings = Math.min(5, allPaths.length); // Increase initial firings
+            for(let i=0; i < initialFirings; i++) {
+                 setTimeout(() => fireRandomThread(), Math.random() * 500); // Faster initial timeout
+            }
+            // Periodically fire more threads
+            setInterval(fireRandomThread, 500 + Math.random() * 750); // Faster interval
+        }
+
+        console.log('Dynamic neural network animation setup complete.');
     },
 
     animateElements() {

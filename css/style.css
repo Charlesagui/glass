@@ -312,6 +312,53 @@ p {
 }
 
 /* ========================================
+   DYNAMIC NEURAL NETWORK ANIMATION
+   ======================================== */
+
+.neural-network-animation {
+    position: relative; /* For positioning SVG absolutely if needed */
+    width: 100%;
+    max-width: 500px; /* Or adjust as needed */
+    height: clamp(250px, 45vw, 350px); /* Adjust height as needed */
+    margin: 2rem auto; /* Center it and provide some spacing */
+    border: 1px dashed var(--color-accent2-transparent); /* Optional: for visualizing bounds during dev */
+}
+
+.neural-network-animation svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible; /* Important if nodes/effects go slightly outside bounds */
+}
+
+/* Dynamic Nodes */
+.nn-node-dynamic {
+    fill: var(--color-accent1-transparent-heavy);
+    stroke: var(--color-accent1);
+    stroke-width: 2px;
+    transition: fill var(--transition-fast), r var(--transition-fast);
+    r: 6px; /* Default radius */
+}
+
+.nn-node-dynamic.active { /* When a signal passes */
+    fill: var(--color-accent2);
+    r: 8px; /* Example: slightly larger radius */
+}
+
+/* Dynamic Threads (Connections) */
+.nn-thread {
+    fill: none;
+    stroke: var(--color-accent2-transparent-light);
+    stroke-width: 1.5px;
+    stroke-linecap: round;
+}
+
+.nn-thread.firing { /* When a signal is actively passing */
+    stroke: #FFFFFF; /* Changed to white for firing threads */
+    /* stroke-dasharray and stroke-dashoffset will be animated by JS */
+}
+
+
+/* ========================================
    ABOUT US SECTION STYLES (Minimalist)
    ======================================== */
 
