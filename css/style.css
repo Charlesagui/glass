@@ -312,6 +312,156 @@ p {
 }
 
 /* ========================================
+   ABOUT US SECTION STYLES (Minimalist)
+   ======================================== */
+
+#about .about-content {
+    /* Ensures the container itself doesn't add extra styling not desired for minimalist look */
+    /* If the section's general backdrop is enough, this div needs to be neutral */
+    background: none;
+    padding: 0; /* Reset padding if any was inherited or set that's too much */
+    border: none;
+    max-width: 700px; /* Or a suitable max-width for readability */
+    margin: 0 auto; /* Center the content block */
+}
+
+#about .about-content p {
+    background: none;
+    border: none;
+    backdrop-filter: none;
+    padding: 0 0 1.2em 0; /* Bottom margin for spacing, no side/top padding */
+    color: var(--color-text-primary); /* Brighter text for better contrast without individual backgrounds */
+    font-size: clamp(1rem, 2.3vw, 1.15rem); /* Adjust font size as needed */
+    line-height: 1.7;
+    /* Override general 'p' hover effects if they feel too heavy for this section */
+    box-shadow: none; /* Remove glow on hover if inherited from general p */
+    transform: none; /* Remove scale on hover if inherited */
+    transition: none; /* Remove transition if hover effects are disabled */
+}
+
+/* Optional: If you want a very subtle separator or just rely on spacing */
+#about .about-content p:last-child {
+    padding-bottom: 0;
+}
+
+/* ========================================
+   CONTACT SECTION STYLES
+   ======================================== */
+
+#contact .contact-details {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--border-radius-small);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    text-align: left; /* Align text to the left within the contact box */
+    max-width: 600px; /* Consistent with other p tags */
+    width: 100%;
+}
+
+#contact .contact-details p {
+    margin-bottom: 1rem;
+    font-size: clamp(1rem, 2.2vw, 1.1rem); /* Slightly smaller than main paragraphs */
+    color: var(--color-text-secondary);
+    background: none; /* Override general p background */
+    border: none; /* Override general p border */
+    padding: 0; /* Override general p padding */
+    backdrop-filter: none; /* Override general p backdrop */
+}
+
+#contact .contact-details p:last-child {
+    margin-bottom: 0;
+}
+
+#contact .contact-details .icon-placeholder {
+    color: var(--color-accent1);
+    margin-right: 0.75em;
+    display: inline-block; /* Ensures proper alignment and spacing */
+}
+
+#contact .contact-details a {
+    color: var(--color-text-primary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+#contact .contact-details a:hover,
+#contact .contact-details a:focus {
+    color: var(--color-accent2);
+    text-decoration: underline;
+}
+
+
+/* ========================================
+   ENHANCED FOOTER STYLES
+   ======================================== */
+
+footer .footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem; /* Spacing between footer elements */
+}
+
+footer .social-media {
+    display: flex;
+    gap: 1.5rem; /* Spacing between social icons */
+}
+
+footer .social-icon {
+    color: var(--color-text-secondary);
+    font-size: 1.2rem; /* Placeholder size, adjust if using actual icons */
+    text-decoration: none;
+    transition: color var(--transition-fast), transform var(--transition-fast);
+}
+
+footer .social-icon:hover,
+footer .social-icon:focus {
+    color: var(--color-accent1);
+    transform: scale(1.1);
+}
+
+footer .footer-nav {
+    display: flex;
+    flex-wrap: wrap; /* Allow links to wrap on smaller screens */
+    justify-content: center;
+    gap: 1rem 2rem; /* Row and column gap */
+}
+
+footer .footer-nav a {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+footer .footer-nav a:hover,
+footer .footer-nav a:focus {
+    color: var(--color-accent3);
+    text-decoration: underline;
+}
+
+footer .copyright {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    margin-top: 1rem; /* Add some space above copyright */
+    background: none; /* Override general p background */
+    border: none; /* Override general p border */
+    padding: 0; /* Override general p padding */
+    backdrop-filter: none; /* Override general p backdrop */
+    max-width: none; /* Allow it to take full width if needed */
+}
+
+/* Ensure footer itself has some basic styling if not already fully covered */
+footer {
+    /* The existing footer rule from line 177 will provide base styles */
+    /* We can add overrides or more specific styles here if needed */
+    /* For now, let's ensure the background and border are consistent with the new vision */
+    background: rgba(5, 8, 22, 0.8); /* Darker, more distinct footer background */
+    border-top: 1px solid var(--color-accent1_translucent, rgba(0, 246, 255, 0.2));
+    padding: 2rem 1rem; /* Responsive padding */
+}
+
+/* ========================================
    HERO ORBE - ULTRA OPTIMIZADO
    ======================================== */
 
