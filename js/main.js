@@ -6,6 +6,7 @@ import { Utils } from './utils.js';
 import { ScrollSystem } from './scroll.js';
 import { AnimationSystem } from './animations.js';
 import { setupLazyLoading } from './lazyLoad.js';
+import { ScrollReveal } from './scrollReveal.js';
 import './parallax.js';
 
 // GSAP and ScrollTrigger are expected to be loaded, potentially dynamically.
@@ -15,8 +16,7 @@ const init = () => {
     
     console.log('🚀 Iniciando aplicación modular...');
 
-    document.body.style.opacity = '1';
-    document.body.classList.remove('loading');
+    // NO quitar loading aquí - esperar a que ScrollReveal esté listo
     
     setupLazyLoading();
     
@@ -25,6 +25,16 @@ const init = () => {
     try {
         // CursorSystem eliminado
         ScrollSystem.init();
+        
+        // Inicializar ScrollReveal para animaciones modernas
+        ScrollReveal.init();
+        
+        // AHORA sí quitar loading después de que ScrollReveal esté listo
+        setTimeout(() => {
+            document.body.style.opacity = '1';
+            document.body.classList.remove('loading');
+            console.log('✅ Loading removido - elementos listos para animar');
+        }, 100);
         
         // AnimationSystem.init() will be called after GSAP is confirmed loaded in startApp
         // If GSAP is already present, AnimationSystem.init() will be called by startApp directly.
@@ -174,6 +184,7 @@ const publicAPI = {
     // CursorSystem eliminado,
     ScrollSystem,
     AnimationSystem,
+    ScrollReveal,
     setupLazyLoading
 };
 
@@ -185,5 +196,9 @@ window.addEventListener('beforeunload', () => {
     if (AnimationSystem && typeof AnimationSystem.cleanup === 'function') {
         console.log('Ejecutando cleanup de AnimationSystem antes de salir (Modular)...');
         AnimationSystem.cleanup();
+    }
+    if (ScrollReveal && typeof ScrollReveal.cleanup === 'function') {
+        console.log('Ejecutando cleanup de ScrollReveal antes de salir...');
+        ScrollReveal.cleanup();
     }
 });

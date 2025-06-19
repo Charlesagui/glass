@@ -1767,3 +1767,434 @@ footer .copyright {
     outline-offset: 2px;
     border-radius: var(--border-radius-small);
 }
+
+/* ========================================
+   SCROLL REVEAL ANIMATIONS - MODERNAS
+   ======================================== */
+
+/* Estados iniciales para elementos que se animan */
+.scroll-hidden {
+    opacity: 0;
+    transform: translateY(30px);
+    filter: blur(2px);
+    transition: none; /* Sin transición inicial */
+}
+
+/* Estado final cuando el elemento es visible */
+.scroll-revealed {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Animaciones específicas */
+.animate-fadeInUp {
+    animation: fadeInUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.animate-fadeInDown {
+    animation: fadeInDown 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.animate-fadeInLeft {
+    animation: fadeInLeft 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.animate-fadeInRight {
+    animation: fadeInRight 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.animate-fadeInScale {
+    animation: fadeInScale 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Keyframes para las animaciones */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+        filter: blur(3px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-40px);
+        filter: blur(3px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+@keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+        filter: blur(3px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+        filter: blur(0);
+    }
+}
+
+@keyframes fadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+        filter: blur(3px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+        filter: blur(0);
+    }
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+        filter: blur(3px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+        filter: blur(0);
+    }
+}
+
+/* Animaciones más suaves para dispositivos con motion reducido */
+@media (prefers-reduced-motion: reduce) {
+    .scroll-hidden,
+    .scroll-revealed {
+        transform: none !important;
+        filter: none !important;
+        transition: opacity 0.3s ease !important;
+    }
+    
+    .animate-fadeInUp,
+    .animate-fadeInDown,
+    .animate-fadeInLeft,
+    .animate-fadeInRight,
+    .animate-fadeInScale {
+        animation: fadeInSimple 0.3s ease forwards !important;
+    }
+    
+    @keyframes fadeInSimple {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+}
+
+/* Mejoras específicas para elementos grandes */
+.hero-orb.scroll-hidden {
+    transform: scale(0.5);
+    filter: blur(5px);
+}
+
+.hero-orb.scroll-revealed {
+    transform: scale(1);
+    filter: blur(0);
+    transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Animación especial para los párrafos */
+p.scroll-hidden {
+    transform: translateY(20px);
+    filter: blur(1px);
+}
+
+p.scroll-revealed {
+    transform: translateY(0);
+    filter: blur(0);
+    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Efecto especial para elementos de animación */
+.neural-network-animation.scroll-hidden,
+.data-flow-animation.scroll-hidden,
+.closing-animation-container.scroll-hidden {
+    transform: translateX(-30px) scale(0.95);
+    filter: blur(3px);
+}
+
+.neural-network-animation.scroll-revealed,
+.data-flow-animation.scroll-revealed,
+.closing-animation-container.scroll-revealed {
+    transform: translateX(0) scale(1);
+    filter: blur(0);
+    transition: all 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Animación de salida suave */
+.animate-fadeOut {
+    animation: fadeOut 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+        filter: blur(2px);
+    }
+}
+
+/* Optimización para animaciones más fluidas en scroll rápido */
+.scroll-hidden,
+.scroll-revealed {
+    will-change: transform, opacity, filter;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+/* Mejora específica para elementos que se ocultan/muestran frecuentemente */
+.scroll-revealed {
+    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.scroll-hidden {
+    transition: all 0.4s cubic-bezier(0.55, 0.085, 0.68, 0.53);
+}
+
+/* ========================================
+   OPTIMIZACIONES ESPECÍFICAS PARA MÓVILES
+   ======================================== */
+
+/* Mejoras para dispositivos táctiles */
+@media (max-width: 768px) {
+    /* Animaciones más rápidas y suaves en móvil */
+    .scroll-hidden {
+        opacity: 0;
+        transform: translateY(20px); /* Menor desplazamiento */
+        filter: blur(1px); /* Menos blur para mejor performance */
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Más rápido */
+    }
+    
+    .scroll-revealed {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+        transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Más rápido */
+    }
+    
+    /* Animaciones específicas más suaves para móvil */
+    .animate-fadeInUp {
+        animation: fadeInUpMobile 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+    
+    .animate-fadeInLeft,
+    .animate-fadeInRight {
+        animation: fadeInSideMobile 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+    
+    .animate-fadeInScale {
+        animation: fadeInScaleMobile 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+    
+    .animate-fadeOut {
+        animation: fadeOutMobile 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards;
+    }
+    
+    /* Keyframes optimizados para móvil */
+    @keyframes fadeInUpMobile {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+            filter: blur(1px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+        }
+    }
+    
+    @keyframes fadeInSideMobile {
+        from {
+            opacity: 0;
+            transform: translateX(20px);
+            filter: blur(1px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+            filter: blur(0);
+        }
+    }
+    
+    @keyframes fadeInScaleMobile {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+            filter: blur(1px);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+            filter: blur(0);
+        }
+    }
+    
+    @keyframes fadeOutMobile {
+        from {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateY(-10px);
+            filter: blur(1px);
+        }
+    }
+    
+    /* Hero orb optimizado para móvil */
+    .hero-orb.scroll-hidden {
+        transform: scale(0.8);
+        filter: blur(2px);
+    }
+    
+    .hero-orb.scroll-revealed {
+        transform: scale(1);
+        filter: blur(0);
+        transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    
+    /* Párrafos más suaves en móvil */
+    p.scroll-hidden {
+        transform: translateY(15px);
+        filter: blur(0.5px);
+    }
+    
+    p.scroll-revealed {
+        transform: translateY(0);
+        filter: blur(0);
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    
+    /* Elementos de animación optimizados */
+    .neural-network-animation.scroll-hidden,
+    .data-flow-animation.scroll-hidden,
+    .closing-animation-container.scroll-hidden {
+        transform: translateX(-20px) scale(0.95);
+        filter: blur(1px);
+    }
+    
+    .neural-network-animation.scroll-revealed,
+    .data-flow-animation.scroll-revealed,
+    .closing-animation-container.scroll-revealed {
+        transform: translateX(0) scale(1);
+        filter: blur(0);
+        transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+}
+
+/* Optimizaciones específicas para pantallas muy pequeñas */
+@media (max-width: 480px) {
+    .scroll-hidden {
+        transform: translateY(15px); /* Aún menor desplazamiento */
+        filter: none; /* Sin blur en pantallas muy pequeñas */
+    }
+    
+    .animate-fadeInUp,
+    .animate-fadeInLeft,
+    .animate-fadeInRight,
+    .animate-fadeInScale {
+        animation-duration: 0.4s; /* Más rápido aún */
+    }
+    
+    .animate-fadeOut {
+        animation-duration: 0.2s; /* Salida muy rápida */
+    }
+}
+
+/* Optimizaciones para dispositivos de alta densidad */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .scroll-hidden,
+    .scroll-revealed {
+        /* Mejorar renderizado en pantallas retina */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+}
+
+/* ========================================
+   ANTI-FOUC: PREVENCIÓN DE PARPADEO EN MÓVIL
+   ======================================== */
+
+/* Aplicar estados ocultos inmediatamente - MAYOR ESPECIFICIDAD */
+@media (max-width: 768px) {
+    /* Forzar ocultación inmediata en móvil */
+    body.loading h1,
+    body.loading h2,
+    body.loading p,
+    body.loading .hero-orb,
+    body.loading .neural-network-animation,
+    body.loading .data-flow-animation,
+    body.loading .closing-animation-container,
+    body.loading .contact-details,
+    body.loading footer {
+        opacity: 0 !important;
+        transform: translateY(20px) !important;
+        filter: blur(1px) !important;
+        transition: none !important;
+        visibility: hidden !important;
+    }
+    
+    /* Revelar solo cuando se quita la clase loading */
+    body:not(.loading) .scroll-hidden {
+        visibility: visible !important;
+        opacity: 0;
+        transform: translateY(20px);
+        filter: blur(1px);
+        transition: none;
+    }
+    
+    /* Estado revelado con transición suave */
+    body:not(.loading) .scroll-revealed {
+        visibility: visible !important;
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    
+    /* Prevenir cualquier transición durante la carga inicial */
+    body.loading * {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+/* Asegurar que el hero se oculte inmediatamente en todas las pantallas */
+.hero-orb.scroll-hidden {
+    opacity: 0 !important;
+    transform: scale(0.8) !important;
+    filter: blur(2px) !important;
+    transition: none !important;
+}
+
+/* Párrafos ocultos inmediatamente */
+p.scroll-hidden {
+    opacity: 0 !important;
+    transform: translateY(15px) !important;
+    filter: blur(1px) !important;
+    transition: none !important;
+}
