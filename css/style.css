@@ -151,27 +151,102 @@ section {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 3rem 1.5rem 4rem 1.5rem;
+    padding: 4rem 2rem 6rem;
     transform-style: preserve-3d;
-    will-change: auto; /* Sin will-change que cause problemas */
+    will-change: auto;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     text-align: center;
+    overflow: hidden;
     
-    /* FONDO COMPLETAMENTE REMOVIDO */
-    background: none;
-    border: none;
-    backdrop-filter: none;
+    /* Fondo sutil con gradiente */
+    background: linear-gradient(
+        to bottom, 
+        rgba(5, 10, 30, 0.3) 0%, 
+        rgba(10, 20, 50, 0.15) 50%, 
+        rgba(5, 10, 30, 0.3) 100%
+    );
+    
+    /* Borde sutil en la parte superior */
+    border-top: 1px solid rgba(0, 200, 255, 0.1);
+    
+    /* Sombra interior sutil */
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.3);
+    
+    /* Efecto de desenfoque sutil */
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    
     margin: 0;
-    
-    /* Layout estable - Sin cambios que causen saltos */
-    contain: layout; /* Contener cambios de layout */
-    
-    /* Performance optimizado */
+    contain: layout;
     transform: translateZ(0);
+    transition: all 0.5s var(--transition-smooth);
     
-    /* Transición suave para cambios de tamaño */
-    transition: min-height 0.3s ease, padding 0.3s ease;
+    /* Efecto de brillo al hacer hover */
+    position: relative;
+    z-index: 1;
+}
+
+/* Efecto de borde luminoso al hacer hover */
+section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 1px solid transparent;
+    border-image: linear-gradient(
+        135deg, 
+        rgba(0, 200, 255, 0.1) 0%, 
+        rgba(0, 100, 255, 0.3) 50%, 
+        rgba(0, 200, 255, 0.1) 100%
+    );
+    border-image-slice: 1;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: -1;
+}
+
+section:hover::before {
+    opacity: 1;
+}
+
+/* Efecto de partículas sutiles de fondo */
+section::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 30%, rgba(0, 200, 255, 0.05) 0%, transparent 20%),
+        radial-gradient(circle at 80% 70%, rgba(255, 0, 200, 0.05) 0%, transparent 20%);
+    pointer-events: none;
+    z-index: -2;
+    opacity: 0.7;
+}
+
+/* Efecto de brillo al hacer scroll */
+section.in-view {
+    background: linear-gradient(
+        to bottom, 
+        rgba(5, 10, 40, 0.4) 0%, 
+        rgba(15, 30, 70, 0.25) 50%, 
+        rgba(5, 10, 40, 0.4) 100%
+    );
+    box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.4);
+}
+
+/* Ajustes para móviles */
+@media (max-width: 768px) {
+    section {
+        padding: 3rem 1rem 4rem;
+        min-height: auto;
+        min-height: auto;
+    }
 }
 
 /* Secciones específicas con alturas diferentes para ritmo visual */
@@ -227,34 +302,65 @@ footer p {
 }
 
 /* ========================================
-   TIPOGRAFÍA OPTIMIZADA
+   TYPOGRAPHY & TEXT STYLES - MEJORADOS
    ======================================== */
 
-h1, h2, h3 {
-    font-family: var(--font-headings);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 0.5rem;
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Montserrat:wght@400;600;700&display=swap');
+
+:root {
+    /* Actualización de fuentes */
+    --font-headings: 'Montserrat', 'Orbitron', sans-serif;
+    --font-body: 'Poppins', 'Roboto', sans-serif;
     
-    /* GRADIENTE ANIMADO SUAVE - No interfiere con scroll */
-    background: linear-gradient(45deg, var(--color-accent1), var(--color-accent2), var(--color-accent3));
-    background-size: 300% 300%; /* Más amplio para efecto más suave */
+    /* Colores de texto mejorados */
+    --text-primary: rgba(255, 255, 255, 0.95);
+    --text-secondary: rgba(200, 210, 230, 0.9);
+    --text-accent: var(--color-accent1);
+    
+    /* Efectos de texto */
+    --text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --text-glow: 0 0 10px rgba(0, 246, 255, 0.5);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-headings);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    text-shadow: var(--text-shadow);
+    transition: all 0.3s var(--transition-smooth);
+}
+
+h1 {
+    font-size: clamp(2.8rem, 9vw, 5rem);
+    background: linear-gradient(90deg, var(--color-accent1), var(--color-accent3));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    
-    /* Padding mínimo */
-    padding: 0.2rem 0;
-    
-    /* Animación MUY lenta para no interferir con scroll */
-    animation: gradientFlow 8s ease-in-out infinite;
-    
-    /* Performance optimizado */
-    will-change: background-position;
-    transform: translateZ(0);
+    margin-bottom: 1.5rem;
+    position: relative;
+    padding-bottom: 1rem;
+    font-weight: 800;
 }
 
-/* ELIMINAR COMPLETAMENTE el fondo flotante de títulos */
+h1::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 4px;
+    background: linear-gradient(90deg, 
+        transparent, 
+        var(--color-accent1), 
+        var(--color-accent3), 
+        transparent);
+    border-radius: 2px;
+    opacity: 0.8;
+}
 
 @keyframes gradientFlow {
     0%, 100% { background-position: 0% 50%; }
@@ -278,22 +384,22 @@ h2 {
 }
 
 p {
-    font-size: clamp(1rem, 2.5vw, 1.3rem);
-    line-height: 1.6; /* Reducido de 1.8 a 1.6 */
-    max-width: 600px;
-    color: var(--color-text-primary);
-    
-    /* Contenido flotante MÁS COMPACTO */
-    padding: 1.5rem; /* Reducido de 2rem a 1.5rem */
-    margin-bottom: 1rem; /* Reducir espacio entre párrafos */
-    border-radius: var(--border-radius);
-    background: rgba(0, 0, 0, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    
-    /* Transición más rápida */
-    transition: var(--transition-fast);
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    max-width: 800px;
+    margin: 1.5rem auto;
+    position: relative;
+    z-index: 1;
+    font-weight: 300;
+    padding: 1.8rem 2rem;
+    background: rgba(10, 15, 30, 0.4);
+    border-left: 3px solid var(--color-accent1);
+    border-radius: 0 8px 8px 0;
+    backdrop-filter: blur(5px);
+    transition: all 0.4s var(--transition-smooth);
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
     
     /* Performance */
     will-change: transform, background;
@@ -302,10 +408,70 @@ p {
 
 @media (hover: hover) {
     p:hover {
-        transform: translateZ(0) scale(1.02);
-        background: rgba(0, 0, 0, 0.25); /* Reducido de 0.4 a 0.25 */
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), var(--glow-soft);
-        border-color: rgba(255, 255, 255, 0.1); /* Reducido de 0.2 a 0.1 */
+        transform: translateX(5px) scale(1.01);
+        background: rgba(20, 30, 60, 0.5);
+        box-shadow: 0 8px 35px rgba(0, 150, 255, 0.15);
+        border-left-color: var(--color-accent2);
+    }
+}
+
+#about {
+    text-align: left;
+}
+
+#about .about-text {
+    position: relative;
+    padding-left: 2.5rem;
+    margin: 2rem 0;
+    opacity: 0.9;
+    transition: all 0.4s ease;
+    border-left: none;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+}
+
+#about .about-text::before {
+    content: '»';
+    position: absolute;
+    left: 0;
+    color: var(--color-accent1);
+    font-size: 1.5em;
+    line-height: 1;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+#about .about-text:hover {
+    transform: translateX(8px);
+    opacity: 1;
+    background: rgba(20, 30, 60, 0.3);
+    padding: 1.8rem 2rem 1.8rem 2.8rem;
+    border-radius: 4px;
+    border-left: 2px solid var(--color-accent1);
+}
+
+#about .about-text:hover::before {
+    left: 10px;
+    color: var(--color-accent2);
+    opacity: 1;
+}
+
+/* Ajustes para móviles */
+@media (max-width: 768px) {
+    p {
+        font-size: 1.05rem;
+        padding: 1.2rem 1.5rem;
+        margin: 1.5rem 0.5rem;
+    }
+    
+    #about .about-text {
+        padding-left: 2rem;
+        margin: 1.5rem 0;
+    }
+    
+    #about .about-text:hover {
+        padding: 1.2rem 1.5rem 1.2rem 2.2rem;
     }
 }
 
