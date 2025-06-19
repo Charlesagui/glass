@@ -6,6 +6,7 @@ import { Utils } from './utils.js';
 import { ScrollSystem } from './scroll.js';
 import { AnimationSystem } from './animations.js';
 import { setupLazyLoading } from './lazyLoad.js';
+import './parallax.js';
 
 // GSAP and ScrollTrigger are expected to be loaded, potentially dynamically.
 

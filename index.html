@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="no-js">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,6 +24,16 @@
     <!-- No usamos archivo CSS externo para el cursor -->
 </head>
 <body class="loading">
+    <!-- Fondo fijo con efecto parallax -->
+    <div class="fixed-background">
+        <div class="particles"></div>
+        <div class="gradient-overlay"></div>
+    </div>
+    
+    <!-- Contenido principal -->
+    <div class="content-wrapper">
+        <!-- Hero Section -->
+        <div class="page-content">
     <!-- HERO SECTION -->
     <header id="hero">
         <div class="hero-orb-container">
@@ -97,7 +107,25 @@
             <p class="copyright">&copy; 2025 San Martin Nexus. Todos los derechos reservados.</p>
         </div>
     </footer>
+    </div> <!-- Cierre de .page-content -->
+    </div> <!-- Cierre de .content-wrapper -->
 
+    <!-- Script de depuración -->
+    <script>
+        // Verificar carga de recursos
+        console.log('🔄 Script de depuración cargado');
+        console.log('📦 GSAP cargado:', typeof gsap !== 'undefined');
+        console.log('🎯 ScrollTrigger cargado:', typeof ScrollTrigger !== 'undefined');
+        
+        // Verificar elementos clave del DOM
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🏗️  DOM completamente cargado');
+            console.log('🎨 Fondo fijo:', document.querySelector('.fixed-background') ? '✅ Encontrado' : '❌ No encontrado');
+            console.log('✨ Partículas:', document.querySelector('.particles') ? '✅ Encontradas' : '❌ No encontradas');
+            console.log('📦 Contenedor de contenido:', document.querySelector('.content-wrapper') ? '✅ Encontrado' : '❌ No encontrado');
+        });
+    </script>
+    
     <!-- Scripts optimizados con loading estratégico -->
     <script>
         // Critical loading management

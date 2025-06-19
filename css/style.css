@@ -3,13 +3,17 @@
 /* Se usa el cursor estándar del sistema */
 /* Performance-first CSS con animaciones GPU-accelerated */
 
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Reckless+Neue:wght@400;500;600;700&family=Roboto:wght@300;400;700&family=Poppins:wght@300;400;600;700&family=Montserrat:wght@400;600;700&display=swap');
 
 /* ========================================
    VARIABLES CSS OPTIMIZADAS
    ======================================== */
 
 :root {
+    /* Tipografía */
+    --font-heading: 'Reckless Neue';
+    --font-body: 'Reckless Neue';
+    
     /* Colores base */
     --color-base-dark: #050816;
     --color-accent1: #00f6ff;
@@ -18,10 +22,11 @@
     --color-accent4: #ff4400;
     --color-text-primary: #e0e0e0;
     --color-text-secondary: #888ea0;
-
-    /* Tipografía */
-    --font-headings: 'Orbitron', sans-serif;
-    --font-body: 'Roboto', sans-serif;
+    --text-primary: rgba(255, 255, 255, 0.95);
+    --text-secondary: rgba(200, 210, 230, 0.9);
+    --text-accent: var(--color-accent1);
+    --text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --text-glow: 0 0 10px rgba(0, 246, 255, 0.5);
 
     /* Efectos optimizados */
     --glow-soft: 0 0 10px currentColor, 0 0 20px currentColor;
@@ -43,7 +48,96 @@
 }
 
 /* ========================================
-   RESET Y BASE OPTIMIZADO
+   EFECTO DE FONDO FIJO CON PARALLAX
+   ======================================== */
+
+/* Estilos base para el fondo fijo */
+.fixed-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+    background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 50%, #0a0a1a 100%);
+    transition: transform 0.1s ease-out;
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    /* Asegurar que el fondo ocupe toda la pantalla */
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+/* Partículas flotantes para el fondo */
+.particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle at 20% 30%, rgba(0, 200, 255, 0.1) 0%, transparent 20%),
+        radial-gradient(circle at 80% 70%, rgba(255, 0, 200, 0.1) 0%, transparent 20%);
+    background-size: 100% 100%, 100% 100%;
+    animation: floatParticles 20s ease-in-out infinite alternate;
+}
+
+/* Sobregradiente para el fondo */
+.gradient-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at center, rgba(10, 15, 30, 0.3) 0%, rgba(5, 10, 20, 0.9) 100%);
+}
+
+/* Contenedor del contenido principal */
+.content-wrapper {
+    position: relative;
+    z-index: 1;
+    background: rgba(5, 10, 20, 0.7);
+    backdrop-filter: blur(5px);
+    min-height: 100vh;
+    min-height: 100dvh;
+    transition: opacity 0.8s ease, transform 0.8s ease;
+    opacity: 0;
+    transform: translateY(20px);
+    /* Asegurar que el contenido esté por encima del fondo */
+    z-index: 10;
+}
+
+body.loaded .content-wrapper {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Asegurar que el body ocupe toda la altura */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+}
+
+/* Animación para las partículas */
+@keyframes floatParticles {
+    0% {
+        transform: translateY(0) translateX(0);
+        background-position: 0% 0%, 100% 100%;
+    }
+    100% {
+        transform: translateY(-2%) translateX(-1%);
+        background-position: 2% 2%, 98% 98%;
+    }
+}
+
+/* ========================================
+   RESET Y ESTILOS BASE - OPTIMIZADOS
    ======================================== */
 
 *, *::before, *::after {
@@ -145,72 +239,98 @@ html, body {
 /* Secciones con layout estable para evitar saltos */
 section {
     position: relative;
-    min-height: 80vh;
-    min-height: 80dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 4rem 2rem 6rem;
+    padding: 6rem 2rem;
+    margin: 0;
     transform-style: preserve-3d;
-    will-change: auto;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     text-align: center;
     overflow: hidden;
-    
-    /* Fondo sutil con gradiente */
-    background: linear-gradient(
-        to bottom, 
-        rgba(5, 10, 30, 0.3) 0%, 
-        rgba(10, 20, 50, 0.15) 50%, 
-        rgba(5, 10, 30, 0.3) 100%
-    );
+    background: transparent;
+    backdrop-filter: none;
+    border: none;
+    box-shadow: none;
     
     /* Borde sutil en la parte superior */
-    border-top: 1px solid rgba(0, 200, 255, 0.1);
+    border-top: 1px solid rgba(0, 200, 255, 0.05);
     
-    /* Sombra interior sutil */
-    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.3);
-    
-    /* Efecto de desenfoque sutil */
-    backdrop-filter: blur(3px);
-    -webkit-backdrop-filter: blur(3px);
-    
-    margin: 0;
-    contain: layout;
-    transform: translateZ(0);
+    /* Efecto de brillo sutil al hacer scroll */
     transition: all 0.5s var(--transition-smooth);
+    opacity: 0.98;
+}
+
+/* Efecto de brillo al hacer scroll */
+section.in-view {
+    opacity: 1;
+}
+
+/* Mejoras de rendimiento para dispositivos táctiles */
+@media (hover: none) and (max-width: 768px) {
+    /* Desactivar efectos de hover en dispositivos táctiles */
+    section::before,
+    section::after,
+    section:hover::before,
+    section:hover::after {
+        display: none !important;
+    }
     
-    /* Efecto de brillo al hacer hover */
-    position: relative;
-    z-index: 1;
+    /* Reducir el desenfoque para mejor rendimiento */
+    .content-wrapper {
+        backdrop-filter: blur(3px);
+    }
+    
+    /* Mejorar la legibilidad del texto */
+    p, .about-text {
+        background: rgba(10, 15, 30, 0.8) !important;
+        backdrop-filter: blur(5px);
+    }
+}
+
+/* Secciones pares con un ligero tono diferente */
+section:nth-child(even) {
+    background: rgba(10, 15, 30, 0.3);
 }
 
 /* Efecto de borde luminoso al hacer hover */
 section::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 96%;
+    height: 96%;
     border: 1px solid transparent;
     border-image: linear-gradient(
         135deg, 
-        rgba(0, 200, 255, 0.1) 0%, 
-        rgba(0, 100, 255, 0.3) 50%, 
-        rgba(0, 200, 255, 0.1) 100%
+        rgba(0, 200, 255, 0.05) 0%, 
+        rgba(0, 100, 255, 0.15) 50%, 
+        rgba(0, 200, 255, 0.05) 100%
     );
     border-image-slice: 1;
     pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.5s ease;
+    opacity: 0.5;
+    transition: all 0.5s ease;
     z-index: -1;
+    border-radius: 4px;
 }
 
 section:hover::before {
-    opacity: 1;
+    opacity: 0.8;
+    width: 98%;
+    height: 98%;
+    border-image: linear-gradient(
+        135deg, 
+        rgba(0, 200, 255, 0.1) 0%, 
+        rgba(0, 150, 255, 0.3) 50%, 
+        rgba(0, 200, 255, 0.1) 100%
+    );
 }
 
 /* Efecto de partículas sutiles de fondo */
@@ -222,11 +342,16 @@ section::after {
     right: 0;
     bottom: 0;
     background: 
-        radial-gradient(circle at 20% 30%, rgba(0, 200, 255, 0.05) 0%, transparent 20%),
-        radial-gradient(circle at 80% 70%, rgba(255, 0, 200, 0.05) 0%, transparent 20%);
+        radial-gradient(circle at 20% 30%, rgba(0, 200, 255, 0.03) 0%, transparent 15%),
+        radial-gradient(circle at 80% 70%, rgba(255, 0, 200, 0.03) 0%, transparent 15%);
     pointer-events: none;
     z-index: -2;
-    opacity: 0.7;
+    opacity: 0.5;
+    transition: opacity 0.5s ease;
+}
+
+section:hover::after {
+    opacity: 0.8;
 }
 
 /* Efecto de brillo al hacer scroll */
@@ -243,9 +368,12 @@ section.in-view {
 /* Ajustes para móviles */
 @media (max-width: 768px) {
     section {
-        padding: 3rem 1rem 4rem;
+        padding: 4rem 1rem;
         min-height: auto;
-        min-height: auto;
+    }
+    
+    .content-wrapper {
+        background: rgba(5, 10, 20, 0.85);
     }
 }
 
@@ -305,32 +433,16 @@ footer p {
    TYPOGRAPHY & TEXT STYLES - MEJORADOS
    ======================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Montserrat:wght@400;600;700&display=swap');
-
-:root {
-    /* Actualización de fuentes */
-    --font-headings: 'Montserrat', 'Orbitron', sans-serif;
-    --font-body: 'Poppins', 'Roboto', sans-serif;
-    
-    /* Colores de texto mejorados */
-    --text-primary: rgba(255, 255, 255, 0.95);
-    --text-secondary: rgba(200, 210, 230, 0.9);
-    --text-accent: var(--color-accent1);
-    
-    /* Efectos de texto */
-    --text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    --text-glow: 0 0 10px rgba(0, 246, 255, 0.5);
-}
+/* Variables de tipografía y texto unificadas */
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-headings);
-    font-weight: 700;
+    font-family: var(--font-heading);
+    color: var(--color-text-primary);
+    font-weight: 600;
     line-height: 1.2;
-    margin-bottom: 1.5rem;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    text-shadow: var(--text-shadow);
-    transition: all 0.3s var(--transition-smooth);
+    margin: 0 0 1.5rem;
+    letter-spacing: -0.5px;
+    text-transform: none;
 }
 
 h1 {
@@ -719,11 +831,6 @@ footer .copyright {
     max-width: none; /* Allow it to take full width if needed */
 }
 
-/* Ensure footer itself has floating content styling */
-footer {
-    /* The updated footer rule now provides floating content styling */
-    /* Consistent with the new vision of floating content over infinite background */
-}
 
 /* ========================================
    HERO ORBE - ULTRA OPTIMIZADO
