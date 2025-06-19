@@ -14,17 +14,12 @@ export const ScrollSystem = {
     },
     
     setupSmoothScroll() {
-        // Forzar scroll nativo para probar la fluidez y detección
-        console.log('ScrollSystem: Forzando scroll nativo suave.');
-        document.documentElement.style.scrollBehavior = 'smooth';
-        // Comentamos la lógica anterior para desactivar el scroll personalizado temporalmente
-        /*
-        if (!config.isMobile && !config.reducedMotion) {
-            this.enableAdvancedSmooth();
-        } else {
-            document.documentElement.style.scrollBehavior = 'smooth';
-        }
-        */
+        // SCROLL NATIVO PURO - Sin smooth behavior que pueda causar saltos
+        console.log('ScrollSystem: Usando scroll nativo PURO sin smooth para evitar saltos.');
+        document.documentElement.style.scrollBehavior = 'auto';
+        
+        // COMPLETAMENTE DESHABILITADO: Todo scroll personalizado
+        // Solo scroll nativo del navegador
     },
     
     enableAdvancedSmooth() {
@@ -102,30 +97,20 @@ export const ScrollSystem = {
     },
     
     bindEvents() {
-        const updateScroll = Utils.rafThrottle(() => {
-            state.scrollY = window.pageYOffset;
-            this.updateParallax();
-        });
+        // DESHABILITADO: Eventos de scroll que pueden causar saltos
+        console.log('ScrollSystem: Eventos de parallax deshabilitados para máxima fluidez.');
         
-        window.addEventListener('scroll', updateScroll, { passive: true });
+        // El scroll nativo maneja todo automáticamente
+        // Sin parallax ni efectos que interfieran con el scroll
     },
     
     updateParallax() {
-        const scrollPercent = state.scrollY / (document.body.scrollHeight - window.innerHeight);
-        
-        // Parallax background
-        document.body.style.setProperty('--scroll-percent', scrollPercent);
-        
-        // Aplicar efectos basados en scroll
-        this.applyScrollEffects(scrollPercent);
+        // DESHABILITADO: Efectos de parallax que causan saltos
+        // Sin modificaciones de CSS durante el scroll
     },
     
     applyScrollEffects(percent) {
-        // Efecto de hue rotation en el background
-        if (!config.reducedMotion) {
-            // Comentamos temporalmente para probar rendimiento
-            // document.body.style.filter = `hue-rotate(${percent * 60}deg)`;
-            // console.log('Hue rotate effect disabled for performance test'); 
-        }
+        // DESHABILITADO: Efectos de scroll que causan saltos
+        // Sin hue rotation ni otros efectos durante scroll
     }
 };

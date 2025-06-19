@@ -1,6 +1,6 @@
 'use strict';
 
-// Sistema de animaciones optimizado y limpio
+// Sistema de animaciones optimizado y limpio - v1.1
 export const AnimationSystem = {
     timelines: {},
     animations: [],
@@ -97,6 +97,8 @@ export const AnimationSystem = {
             this.animations.push(heroTimeline);
         }
         
+        // DESHABILITADO: ScrollTrigger del hero que causa saltos durante scroll
+        /*
         ScrollTrigger.create({
             trigger: hero,
             start: "top top",
@@ -109,9 +111,15 @@ export const AnimationSystem = {
                 if (subtitle) gsap.set(subtitle, { y: progress * 30, opacity: 1 - progress * 0.3 });
             }
         });
+        */
     },
 
     animateSections() {
+        // DESHABILITADO: Animaciones de secciones con ScrollTrigger que causan saltos
+        console.log('Animaciones de secciones deshabilitadas para scroll fluido.');
+        
+        // Las secciones aparecen instantáneamente sin animaciones que interfieran con el scroll
+        /*
         const sections = document.querySelectorAll('section');
         sections.forEach((section, index) => {
             const title = section.querySelector('h2');
@@ -141,6 +149,7 @@ export const AnimationSystem = {
                 });
             }
         });
+        */
     },
     setupDataFlowAnimation() {
         console.log('Setting up data flow animation...');
@@ -150,38 +159,28 @@ export const AnimationSystem = {
             return;
         }
 
-        ScrollTrigger.create({
-            trigger: container,
-            start: "top 80%",
-            once: true,
-            onEnter: () => {
-                console.log('Data flow animation container entered viewport, creating animation.');
-                container.innerHTML = '';
+        // EJECUTAR INMEDIATAMENTE - Sin ScrollTrigger que cause saltos
+        console.log('Data flow animation iniciada inmediatamente - sin ScrollTrigger.');
+        container.innerHTML = '';
+
+        const svgNS = 'http://www.w3.org/2000/svg';
+        const svg = document.createElementNS(svgNS, 'svg');
+        svg.setAttribute('width', '100%');
+        svg.setAttribute('height', '100%');
+        svg.setAttribute('viewBox', '0 0 800 600'); // Aumentado para mayor espacio
+        svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+        container.appendChild(svg);
+
+        this.createGradients(svg);
         
-                const svgNS = 'http://www.w3.org/2000/svg';
-                const svg = document.createElementNS(svgNS, 'svg');
-                svg.setAttribute('width', '100%');
-                svg.setAttribute('height', '100%');
-                svg.setAttribute('viewBox', '0 0 800 400');
-                svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-                container.appendChild(svg);
-
-                this.createGradients(svg);
-                
-                const channels = [
-                    { path: 'M 50 100 Q 200 50 400 120 Q 600 190 750 150', color: '#00f6ff' },
-                    { path: 'M 50 200 Q 150 180 300 220 Q 500 260 750 230', color: '#ff00e0' },
-                    { path: 'M 50 300 Q 250 250 450 300 Q 650 350 750 310', color: '#00ff88' }
-                ];
-
-                channels.forEach((channel, index) => {
-                    const createdPath = this.createDataChannel(svg, channel, index);
-                    this.createDataPackets(svg, channel, createdPath, index);
-                });
-
-                console.log('Data flow animation setup complete.');
-            }
-        });
+        // CONTINUAR con las animaciones internas inmediatamente
+        this.createDataChannels(svg); // Ya incluye los paquetes móviles
+        this.createNetworkNodes(svg);
+        this.createNodeConnections(svg); // Nueva función para conectar nodos
+        this.createBandwidthMonitors(svg);
+        this.createNetworkGrid(svg);
+        this.animateStatusIndicators(svg);
+        console.log('Data flow animation setup complete.');
     },
 
     setupNeuralNetworkAnimation() {
@@ -877,6 +876,551 @@ export const AnimationSystem = {
                     delay: Math.random()
                 });
             }
+        }
+    },
+
+    // Funciones para las animaciones de data flow - MEJORADAS
+    createDataChannels(svg) {
+        const channels = [
+            { 
+                path: 'M 50 150 Q 200 100 400 180 Q 600 250 750 200', 
+                color: '#00f6ff',
+                strokeWidth: '4',
+                dashArray: '15,5'
+            },
+            { 
+                path: 'M 50 250 Q 150 220 300 280 Q 500 340 750 300', 
+                color: '#ff00e0',
+                strokeWidth: '3',
+                dashArray: '10,8'
+            },
+            { 
+                path: 'M 50 350 Q 250 300 450 380 Q 650 440 750 400', 
+                color: '#00ff88',
+                strokeWidth: '3',
+                dashArray: '12,6'
+            },
+            { 
+                path: 'M 50 450 Q 200 420 400 480 Q 600 520 750 500', 
+                color: '#ffaa00',
+                strokeWidth: '2',
+                dashArray: '8,4'
+            }
+        ];
+
+        channels.forEach((channel, index) => {
+            // Crear el path principal
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', channel.path);
+            path.setAttribute('stroke', channel.color);
+            path.setAttribute('stroke-width', channel.strokeWidth);
+            path.setAttribute('fill', 'none');
+            path.setAttribute('opacity', '0.7');
+            path.setAttribute('stroke-linecap', 'round');
+            path.setAttribute('stroke-dasharray', channel.dashArray);
+            path.classList.add('data-channel');
+            svg.appendChild(path);
+
+            // Animar el dash pattern para efecto de flujo
+            if (typeof gsap !== 'undefined') {
+                gsap.to(path, {
+                    strokeDashoffset: -100,
+                    duration: 5 + index,
+                    repeat: -1,
+                    ease: 'none'
+                });
+
+                // Pulso de intensidad
+                gsap.to(path, {
+                    opacity: 1,
+                    strokeWidth: parseInt(channel.strokeWidth) + 1,
+                    duration: 2 + index * 0.5,
+                    repeat: -1,
+                    yoyo: true,
+                    ease: 'sine.inOut'
+                });
+            }
+
+            // Crear paquetes que se mueven por el canal
+            this.createMovingPackets(svg, channel, index);
+        });
+    },
+
+    createMovingPackets(svg, channel, channelIndex) {
+        // Crear múltiples paquetes por canal con mejor distribución y más actividad
+        const packetCount = 6; // Más paquetes por canal
+        
+        for (let i = 0; i < packetCount; i++) {
+            const createPacketAnimation = () => {
+                const packet = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                packet.setAttribute('r', '12'); // Paquetes más grandes
+                packet.setAttribute('fill', channel.color);
+                packet.setAttribute('stroke', '#ffffff');
+                packet.setAttribute('stroke-width', '2');
+                packet.setAttribute('opacity', '0');
+                packet.setAttribute('filter', `drop-shadow(0 0 15px ${channel.color})`);
+                svg.appendChild(packet);
+
+                // Crear path invisible para seguimiento
+                const pathElement = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                pathElement.setAttribute('d', channel.path);
+                pathElement.setAttribute('opacity', '0');
+                svg.appendChild(pathElement);
+
+                // Animar a lo largo del path
+                if (typeof gsap !== 'undefined') {
+                    const tl = gsap.timeline({ 
+                        onComplete: () => {
+                            packet.remove();
+                            pathElement.remove();
+                            // Crear nuevo paquete con delay aleatorio
+                            setTimeout(createPacketAnimation, Math.random() * 2000 + 500);
+                        }
+                    });
+                    
+                    // Verificar si MotionPathPlugin está disponible
+                    if (typeof MotionPathPlugin !== 'undefined') {
+                        tl.fromTo(packet, 
+                            { 
+                                motionPath: { path: channel.path, start: 0 },
+                                opacity: 0,
+                                scale: 0.2
+                            },
+                            {
+                                motionPath: { path: channel.path, end: 1 },
+                                opacity: 1,
+                                scale: 1,
+                                duration: 4 + Math.random() * 2, // Velocidad consistente
+                                ease: 'power1.inOut'
+                            }
+                        )
+                        .to(packet, {
+                            opacity: 0,
+                            scale: 0.2,
+                            duration: 0.5,
+                            ease: 'power2.in'
+                        }, '-=0.5');
+                    } else {
+                        // Fallback mejorado con mejor flujo
+                        const pathLength = pathElement.getTotalLength();
+                        
+                        tl.to({}, {
+                            duration: 4 + Math.random() * 2,
+                            ease: 'power1.inOut',
+                            onUpdate: function() {
+                                const progress = this.progress();
+                                const point = pathElement.getPointAtLength(progress * pathLength);
+                                packet.setAttribute('cx', point.x);
+                                packet.setAttribute('cy', point.y);
+                                
+                                // Suavizado de opacidad y escala
+                                let opacity, scale;
+                                if (progress < 0.2) {
+                                    opacity = progress * 5; // Fade in
+                                    scale = 0.2 + (progress * 4);
+                                } else if (progress > 0.8) {
+                                    opacity = (1 - progress) * 5; // Fade out
+                                    scale = 0.2 + ((1 - progress) * 4);
+                                } else {
+                                    opacity = 1;
+                                    scale = 1;
+                                }
+                                packet.setAttribute('opacity', opacity);
+                                packet.setAttribute('transform', `scale(${scale})`);
+                            }
+                        });
+                    }
+                } else {
+                    // Fallback sin GSAP - CSS animation
+                    packet.style.animation = `packetFlow${channelIndex} ${4 + Math.random() * 2}s linear infinite`;
+                    setTimeout(() => {
+                        packet.remove();
+                        pathElement.remove();
+                        setTimeout(createPacketAnimation, Math.random() * 2000 + 500);
+                    }, 6000);
+                }
+            };
+
+            // Iniciar cada paquete con delay progresivo
+            setTimeout(createPacketAnimation, (i * 800) + (channelIndex * 200) + Math.random() * 1000);
+        }
+    },
+
+    createNetworkNodes(svg) {
+        const nodes = [
+            { x: 80, y: 180, type: 'input', color: '#00f6ff', size: 18 },
+            { x: 200, y: 140, type: 'router', color: '#ff00e0', size: 15 },
+            { x: 320, y: 220, type: 'switch', color: '#00ff88', size: 15 },
+            { x: 450, y: 280, type: 'server', color: '#ffaa00', size: 18 },
+            { x: 580, y: 200, type: 'gateway', color: '#ff4400', size: 15 },
+            { x: 720, y: 240, type: 'output', color: '#aa00ff', size: 18 }
+        ];
+
+        nodes.forEach((node, index) => {
+            // Nodo principal más grande
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', node.x);
+            circle.setAttribute('cy', node.y);
+            circle.setAttribute('r', node.size);
+            circle.setAttribute('fill', 'rgba(0, 0, 0, 0.4)');
+            circle.setAttribute('stroke', node.color);
+            circle.setAttribute('stroke-width', '3');
+            circle.setAttribute('opacity', '0.9');
+            circle.setAttribute('filter', `drop-shadow(0 0 20px ${node.color})`);
+            svg.appendChild(circle);
+
+            // Múltiples anillos pulsantes
+            for (let ring = 1; ring <= 3; ring++) {
+                const outerRing = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                outerRing.setAttribute('cx', node.x);
+                outerRing.setAttribute('cy', node.y);
+                outerRing.setAttribute('r', node.size + (ring * 8));
+                outerRing.setAttribute('fill', 'none');
+                outerRing.setAttribute('stroke', node.color);
+                outerRing.setAttribute('stroke-width', '1');
+                outerRing.setAttribute('opacity', '0');
+                svg.appendChild(outerRing);
+
+                // Animación de ondas expansivas
+                if (typeof gsap !== 'undefined') {
+                    gsap.to(outerRing, {
+                        scale: 1.5,
+                        opacity: 0.3,
+                        duration: 2,
+                        repeat: -1,
+                        ease: 'power2.out',
+                        delay: (index * 0.3) + (ring * 0.5)
+                    });
+                }
+            }
+
+            // Etiqueta del tipo de nodo
+            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            text.setAttribute('x', node.x);
+            text.setAttribute('y', node.y - 35);
+            text.setAttribute('text-anchor', 'middle');
+            text.setAttribute('fill', '#ffffff');
+            text.setAttribute('font-size', '12');
+            text.setAttribute('font-weight', 'bold');
+            text.setAttribute('opacity', '0.8');
+            text.textContent = node.type.toUpperCase();
+            svg.appendChild(text);
+
+            // Indicador de actividad
+            const indicator = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            indicator.setAttribute('cx', node.x + node.size - 5);
+            indicator.setAttribute('cy', node.y - node.size + 5);
+            indicator.setAttribute('r', '4');
+            indicator.setAttribute('fill', '#00ff00');
+            indicator.setAttribute('opacity', '0.7');
+            svg.appendChild(indicator);
+
+            // Agregar animaciones mejoradas
+            if (typeof gsap !== 'undefined') {
+                // Pulso del nodo principal
+                gsap.to(circle, {
+                    scale: 1.2,
+                    duration: 1.5 + index * 0.2,
+                    repeat: -1,
+                    yoyo: true,
+                    ease: 'sine.inOut',
+                    delay: Math.random() * 2
+                });
+
+                // Parpadeo del indicador de actividad
+                gsap.to(indicator, {
+                    opacity: 1,
+                    scale: 1.3,
+                    duration: 0.5,
+                    repeat: -1,
+                    yoyo: true,
+                    ease: 'power2.inOut',
+                    delay: Math.random() * 1
+                });
+            }
+        });
+    },
+
+    createBandwidthMonitors(svg) {
+        // Crear monitores de ancho de banda mejorados
+        const monitors = [
+            { x: 20, y: 50, color: '#00f6ff', label: 'INCOMING', value: 'TCP' },
+            { x: 20, y: 150, color: '#ff00e0', label: 'PROCESSING', value: 'UDP' },
+            { x: 20, y: 250, color: '#00ff88', label: 'OUTGOING', value: 'HTTP' },
+            { x: 20, y: 350, color: '#ffaa00', label: 'LATENCY', value: 'ICMP' }
+        ];
+
+        monitors.forEach((monitor, index) => {
+            // Contenedor del monitor más grande
+            const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            rect.setAttribute('x', monitor.x);
+            rect.setAttribute('y', monitor.y);
+            rect.setAttribute('width', '120'); // Más ancho
+            rect.setAttribute('height', '70'); // Más alto
+            rect.setAttribute('fill', 'rgba(0, 0, 0, 0.6)');
+            rect.setAttribute('stroke', monitor.color);
+            rect.setAttribute('stroke-width', '2');
+            rect.setAttribute('rx', '8');
+            rect.setAttribute('filter', `drop-shadow(0 0 10px ${monitor.color})`);
+            svg.appendChild(rect);
+
+            // Etiqueta del monitor
+            const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            label.setAttribute('x', monitor.x + 60);
+            label.setAttribute('y', monitor.y + 20);
+            label.setAttribute('text-anchor', 'middle');
+            label.setAttribute('fill', monitor.color);
+            label.setAttribute('font-size', '11');
+            label.setAttribute('font-weight', 'bold');
+            label.textContent = monitor.label;
+            svg.appendChild(label);
+
+            // Valor del protocolo
+            const value = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            value.setAttribute('x', monitor.x + 60);
+            value.setAttribute('y', monitor.y + 35);
+            value.setAttribute('text-anchor', 'middle');
+            value.setAttribute('fill', '#ffffff');
+            value.setAttribute('font-size', '9');
+            value.setAttribute('opacity', '0.8');
+            value.textContent = monitor.value;
+            svg.appendChild(value);
+
+            // Barra de progreso más grande
+            const progressBg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            progressBg.setAttribute('x', monitor.x + 10);
+            progressBg.setAttribute('y', monitor.y + 45);
+            progressBg.setAttribute('width', '100');
+            progressBg.setAttribute('height', '12');
+            progressBg.setAttribute('fill', 'rgba(255, 255, 255, 0.1)');
+            progressBg.setAttribute('rx', '6');
+            svg.appendChild(progressBg);
+
+            const progressBar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            progressBar.setAttribute('x', monitor.x + 10);
+            progressBar.setAttribute('y', monitor.y + 45);
+            progressBar.setAttribute('width', '0');
+            progressBar.setAttribute('height', '12');
+            progressBar.setAttribute('fill', monitor.color);
+            progressBar.setAttribute('opacity', '0.8');
+            progressBar.setAttribute('rx', '6');
+            svg.appendChild(progressBar);
+
+            // Animación de la barra de progreso
+            if (typeof gsap !== 'undefined') {
+                gsap.to(progressBar, {
+                    width: 80 + Math.random() * 20,
+                    duration: 2 + Math.random() * 2,
+                    repeat: -1,
+                    yoyo: true,
+                    ease: 'power2.inOut',
+                    delay: index * 0.5
+                });
+
+                // Pulso del contenedor
+                gsap.to(rect, {
+                    strokeWidth: 3,
+                    duration: 1.5,
+                    repeat: -1,
+                    yoyo: true,
+                    ease: 'sine.inOut',
+                    delay: Math.random() * 2
+                });
+            }
+        });
+    },
+    
+    animateProgressBar(progressBar, index) {
+        if (typeof gsap !== 'undefined') {
+            gsap.to(progressBar, {
+                width: 70,
+                duration: 2 + index * 0.5,
+                repeat: -1,
+                yoyo: true,
+                ease: 'power2.inOut',
+                delay: index * 0.3
+            });
+        }
+    },
+
+    createNetworkGrid(svg) {
+        // Crear grilla de conexiones de red para dar más contexto visual
+        const gridLines = [];
+        
+        // Líneas horizontales
+        for (let y = 100; y <= 500; y += 100) {
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', '150');
+            line.setAttribute('y1', y);
+            line.setAttribute('x2', '650');
+            line.setAttribute('y2', y);
+            line.setAttribute('stroke', 'rgba(255, 255, 255, 0.05)');
+            line.setAttribute('stroke-width', '1');
+            line.setAttribute('stroke-dasharray', '5,10');
+            svg.appendChild(line);
+            gridLines.push(line);
+        }
+
+        // Líneas verticales
+        for (let x = 200; x <= 600; x += 100) {
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', x);
+            line.setAttribute('y1', '100');
+            line.setAttribute('x2', x);
+            line.setAttribute('y2', '500');
+            line.setAttribute('stroke', 'rgba(255, 255, 255, 0.05)');
+            line.setAttribute('stroke-width', '1');
+            line.setAttribute('stroke-dasharray', '5,10');
+            svg.appendChild(line);
+            gridLines.push(line);
+        }
+
+        // Animar el dash offset para crear efecto de movimiento
+        if (typeof gsap !== 'undefined') {
+            gridLines.forEach((line, index) => {
+                gsap.to(line, {
+                    strokeDashoffset: -20,
+                    duration: 8 + (index % 3) * 2,
+                    repeat: -1,
+                    ease: 'none'
+                });
+            });
+        }
+        
+        // Agregar líneas de fondo adicionales para mejor efecto visual
+        for (let i = 0; i < 800; i += 80) {
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', i);
+            line.setAttribute('y1', '0');
+            line.setAttribute('x2', i);
+            line.setAttribute('y2', '400');
+            line.setAttribute('stroke', 'rgba(255, 255, 255, 0.03)');
+            line.setAttribute('stroke-width', '1');
+            svg.appendChild(line);
+        }
+        
+        for (let i = 0; i < 400; i += 80) {
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', '0');
+            line.setAttribute('y1', i);
+            line.setAttribute('x2', '800');
+            line.setAttribute('y2', i);
+            line.setAttribute('stroke', 'rgba(255, 255, 255, 0.03)');
+            line.setAttribute('stroke-width', '1');
+            svg.appendChild(line);
+        }
+    },
+
+    createNodeConnections(svg) {
+        // Definir conexiones entre nodos específicos
+        const connections = [
+            { from: { x: 80, y: 180 }, to: { x: 200, y: 140 }, color: '#00f6ff' },
+            { from: { x: 200, y: 140 }, to: { x: 320, y: 220 }, color: '#ff00e0' },
+            { from: { x: 320, y: 220 }, to: { x: 450, y: 280 }, color: '#00ff88' },
+            { from: { x: 450, y: 280 }, to: { x: 580, y: 200 }, color: '#ffaa00' },
+            { from: { x: 580, y: 200 }, to: { x: 720, y: 240 }, color: '#aa00ff' },
+            // Conexiones adicionales
+            { from: { x: 200, y: 140 }, to: { x: 450, y: 280 }, color: '#ffffff' },
+            { from: { x: 320, y: 220 }, to: { x: 720, y: 240 }, color: '#ffffff' }
+        ];
+
+        connections.forEach((conn, index) => {
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', conn.from.x);
+            line.setAttribute('y1', conn.from.y);
+            line.setAttribute('x2', conn.to.x);
+            line.setAttribute('y2', conn.to.y);
+            line.setAttribute('stroke', conn.color);
+            line.setAttribute('stroke-width', index < 5 ? '2' : '1');
+            line.setAttribute('opacity', index < 5 ? '0.6' : '0.3');
+            line.setAttribute('stroke-dasharray', index < 5 ? '8,4' : '4,8');
+            svg.appendChild(line);
+
+            // Animar las conexiones
+            if (typeof gsap !== 'undefined') {
+                gsap.to(line, {
+                    strokeDashoffset: -20,
+                    duration: 3 + (index % 3),
+                    repeat: -1,
+                    ease: 'none'
+                });
+
+                // Pulso ocasional de intensidad
+                gsap.to(line, {
+                    opacity: (index < 5 ? 0.9 : 0.6),
+                    strokeWidth: (index < 5 ? 3 : 2),
+                    duration: 1.5,
+                    repeat: -1,
+                    yoyo: true,
+                    ease: 'sine.inOut',
+                    delay: Math.random() * 3
+                });
+            }
+        });
+    },
+
+    animateStatusIndicators(svg) {
+        // Crear indicadores de estado en diferentes puntos
+        const statusPoints = [
+            { x: 750, y: 50, color: '#00ff00', status: 'ONLINE' },
+            { x: 750, y: 100, color: '#ffff00', status: 'SYNC' },
+            { x: 750, y: 150, color: '#ff4400', status: 'LOAD' },
+            { x: 750, y: 200, color: '#ff00e0', status: 'PROC' }
+        ];
+
+        statusPoints.forEach((point, index) => {
+            // Círculo indicador
+            const indicator = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            indicator.setAttribute('cx', point.x);
+            indicator.setAttribute('cy', point.y);
+            indicator.setAttribute('r', '8');
+            indicator.setAttribute('fill', point.color);
+            indicator.setAttribute('opacity', '0.7');
+            indicator.setAttribute('filter', `drop-shadow(0 0 10px ${point.color})`);
+            svg.appendChild(indicator);
+
+            // Etiqueta del estado
+            const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            label.setAttribute('x', point.x - 35);
+            label.setAttribute('y', point.y + 5);
+            label.setAttribute('text-anchor', 'end');
+            label.setAttribute('fill', point.color);
+            label.setAttribute('font-size', '10');
+            label.setAttribute('font-weight', 'bold');
+            label.textContent = point.status;
+            svg.appendChild(label);
+
+            // Animación de parpadeo
+            if (typeof gsap !== 'undefined') {
+                gsap.to(indicator, {
+                    opacity: 1,
+                    scale: 1.2,
+                    duration: 0.8 + (index * 0.2),
+                    repeat: -1,
+                    yoyo: true,
+                    ease: 'power2.inOut'
+                });
+            }
+        });
+        
+        // Crear indicadores de estado
+        const indicator = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        indicator.setAttribute('cx', '750');
+        indicator.setAttribute('cy', '50');
+        indicator.setAttribute('r', '6');
+        indicator.setAttribute('fill', '#00ff88');
+        indicator.setAttribute('opacity', '1'); // Inicializar opacity
+        svg.appendChild(indicator);
+
+        // Animar parpadeo de forma segura
+        if (typeof gsap !== 'undefined') {
+            gsap.to(indicator, {
+                opacity: 0.3,
+                duration: 1,
+                repeat: -1,
+                yoyo: true,
+                ease: 'power2.inOut'
+            });
         }
     },
 

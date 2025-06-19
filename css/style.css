@@ -64,13 +64,15 @@
 }
 
 html {
-    scroll-behavior: smooth;
+    scroll-behavior: auto; /* CAMBIO: Deshabilitar smooth que puede causar saltos */
     overflow-x: hidden;
-    overflow-y: auto; /* Asegurar que el scroll vertical esté habilitado */
-    /* Scrollbar hiding handled globally below */
+    overflow-y: auto;
     height: 100%;
     width: 100%;
-    max-width: 100vw; /* Asegurar que no exceda el ancho de la ventana */
+    max-width: 100vw;
+    
+    /* Sin scroll padding que pueda causar saltos */
+    scroll-padding-top: 0;
 }
 
 /* Ocultar scrollbar de forma efectiva y global */
@@ -94,15 +96,18 @@ body {
         radial-gradient(circle at 80% 20%, rgba(255, 0, 224, 0.1) 0%, transparent 50%);
     background-attachment: fixed;
     color: var(--color-text-primary);
-    /* Overflow controlled by html element */
     line-height: 1.6;
-    height: 100%; /* Asegurar que body ocupe todo el alto disponible */
+    height: 100%;
     margin: 0;
     padding: 0;
     
+    /* SCROLL NATIVO SIMPLE - Sin comportamientos que causen saltos */
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: auto;
+    
     /* Performance optimizations */
-    will-change: transform, filter;
-    transform: translateZ(0); /* Force GPU acceleration */
+    will-change: auto; /* Cambiar de transform a auto */
+    transform: translateZ(0);
 }
 
 /* Cursor personalizado solo en desktop */
@@ -114,8 +119,16 @@ body {
 }
 
 /* ========================================
-   LAYOUT PRINCIPAL OPTIMIZADO
+   LAYOUT PRINCIPAL OPTIMIZADO - SIN SEPARACIONES
    ======================================== */
+
+/* Eliminar completamente cualquier separación */
+main {
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: none;
+}
 
 /* Contenedor principal optimizado para scroll */
 html, body {
@@ -129,58 +142,76 @@ html, body {
     -ms-text-size-adjust: 100%;
 }
 
-/* Secciones optimizadas para scroll */
-header, section {
+/* Secciones con layout estable para evitar saltos */
+section {
     position: relative;
-    min-height: 100vh;
-    min-height: 100dvh;
+    min-height: 90vh;
+    min-height: 90dvh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 2rem;
+    padding: 4rem 2rem 6rem 2rem;
     transform-style: preserve-3d;
-    will-change: transform, opacity;
+    will-change: auto; /* Sin will-change que cause problemas */
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     text-align: center;
     
-    /* Backdrop optimizado */
-    backdrop-filter: var(--blur-light);
-    background: 
-        linear-gradient(135deg, 
-            rgba(0, 246, 255, 0.03), 
-            rgba(255, 0, 224, 0.03)
-        );
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    /* FONDO COMPLETAMENTE REMOVIDO */
+    background: none;
+    border: none;
+    backdrop-filter: none;
+    margin: 0;
     
-    /* Performance */
-    will-change: transform, opacity;
+    /* Layout estable - Sin cambios que causen saltos */
+    contain: layout; /* Contener cambios de layout */
+    
+    /* Performance optimizado */
     transform: translateZ(0);
-    
-    /* Transición suave */
-    transition: var(--transition-smooth);
 }
 
-/* Efecto hover optimizado */
+/* Secciones específicas con alturas diferentes para ritmo visual */
+#about {
+    min-height: 85vh; /* Aumentado para contenido denso */
+    min-height: 85dvh;
+    padding: 4rem 2rem 5rem 2rem; /* Más espacio para múltiples párrafos */
+}
+
+#contact {
+    min-height: 50vh; /* Sección más compacta */
+    min-height: 50dvh;
+    padding: 2rem 2rem 3rem 2rem;
+}
+
+#closing {
+    min-height: 80vh; /* Intermedio */
+    min-height: 80dvh;
+    padding: 3rem 2rem 4rem 2rem;
+}
+
+/* Efecto hover removido para fondo infinito */
 @media (hover: hover) {
     header:hover, section:hover {
-        transform: translateZ(0) scale(1.005);
-        background: 
-            linear-gradient(135deg, 
-                rgba(0, 246, 255, 0.05), 
-                rgba(255, 0, 224, 0.05)
-            );
+        transform: translateZ(0) scale(1.002); /* Efecto muy sutil */
     }
 }
 
 footer {
     min-height: auto;
-    padding: 2rem;
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.9));
-    border-top: 2px solid rgba(0, 246, 255, 0.3);
-    backdrop-filter: var(--blur-light);
+    padding: 3rem 2rem; /* Más padding para mejor proporción */
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(0, 246, 255, 0.1);
+    border-radius: var(--border-radius);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     text-align: center;
+    margin: 3rem auto 2rem auto; /* Más separación superior */
+    max-width: calc(100% - 4rem);
+    position: relative;
+    
+    /* Performance */
+    transform: translateZ(0);
 }
 
 footer p {
@@ -196,23 +227,29 @@ footer p {
 
 h1, h2, h3 {
     font-family: var(--font-headings);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+    
+    /* GRADIENTE ANIMADO SUAVE - No interfiere con scroll */
     background: linear-gradient(45deg, var(--color-accent1), var(--color-accent2), var(--color-accent3));
-    background-size: 200% 200%;
+    background-size: 300% 300%; /* Más amplio para efecto más suave */
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
     
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 1rem;
+    /* Padding mínimo */
+    padding: 0.2rem 0;
     
-    /* Animación del gradiente */
-    animation: gradientFlow 4s ease-in-out infinite;
+    /* Animación MUY lenta para no interferir con scroll */
+    animation: gradientFlow 8s ease-in-out infinite;
     
-    /* Performance */
+    /* Performance optimizado */
     will-change: background-position;
     transform: translateZ(0);
 }
+
+/* ELIMINAR COMPLETAMENTE el fondo flotante de títulos */
 
 @keyframes gradientFlow {
     0%, 100% { background-position: 0% 50%; }
@@ -237,19 +274,21 @@ h2 {
 
 p {
     font-size: clamp(1rem, 2.5vw, 1.3rem);
-    line-height: 1.8;
+    line-height: 1.6; /* Reducido de 1.8 a 1.6 */
     max-width: 600px;
-    color: var(--color-text-secondary);
+    color: var(--color-text-primary);
     
-    /* Contenedor con backdrop */
-    padding: 1.5rem;
+    /* Contenido flotante MÁS COMPACTO */
+    padding: 1.5rem; /* Reducido de 2rem a 1.5rem */
+    margin-bottom: 1rem; /* Reducir espacio entre párrafos */
     border-radius: var(--border-radius);
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: var(--blur-light);
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     
-    /* Transición suave */
-    transition: var(--transition-smooth);
+    /* Transición más rápida */
+    transition: var(--transition-fast);
     
     /* Performance */
     will-change: transform, background;
@@ -259,8 +298,9 @@ p {
 @media (hover: hover) {
     p:hover {
         transform: translateZ(0) scale(1.02);
-        background: rgba(255, 255, 255, 0.08);
-        box-shadow: var(--glow-soft);
+        background: rgba(0, 0, 0, 0.25); /* Reducido de 0.4 a 0.25 */
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), var(--glow-soft);
+        border-color: rgba(255, 255, 255, 0.1); /* Reducido de 0.2 a 0.1 */
     }
 }
 
@@ -268,6 +308,7 @@ p {
    HERO SECTION - ULTRA OPTIMIZADO
    ======================================== */
 
+/* Hero mantiene altura completa */
 #hero {
     position: relative;
     overflow: hidden;
@@ -276,11 +317,11 @@ p {
     justify-content: center;
     align-items: center;
     text-align: center;
-    padding: 2rem;
-    min-height: 100vh;
+    padding: 1rem 2rem;
+    min-height: 100vh; /* Altura completa para impacto */
     min-height: 100dvh;
     color: var(--color-text-primary);
-    will-change: transform, opacity;
+    will-change: auto;
     transform: translateZ(0);
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
@@ -290,17 +331,9 @@ p {
     /* Performance optimizations */
     contain: content;
     content-visibility: auto;
-    /* Font smoothing inherited from body */
     
-    /* Background effects */
-    background: 
-        radial-gradient(ellipse at center, #1a0933 0%, var(--color-base-dark) 70%),
-        radial-gradient(circle at 20% 80%, rgba(0, 246, 255, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255, 0, 224, 0.1) 0%, transparent 50%);
-    background-attachment: fixed;
-    
-    /* Smooth transitions */
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* SIN FONDO */
+    background: none;
 }
 
 /* Optimize for reduced motion */
@@ -370,36 +403,42 @@ p {
 
 
 /* ========================================
-   ABOUT US SECTION STYLES (Minimalist)
+   ABOUT US SECTION STYLES (Contenido Flotante)
    ======================================== */
 
 #about .about-content {
-    /* Ensures the container itself doesn't add extra styling not desired for minimalist look */
-    /* If the section's general backdrop is enough, this div needs to be neutral */
     background: none;
-    padding: 0; /* Reset padding if any was inherited or set that's too much */
+    padding: 0;
     border: none;
-    max-width: 700px; /* Or a suitable max-width for readability */
-    margin: 0 auto; /* Center the content block */
+    max-width: 700px;
+    margin: 0 auto;
 }
 
 #about .about-content p {
-    background: none;
-    border: none;
-    backdrop-filter: none;
-    padding: 0 0 1.2em 0; /* Bottom margin for spacing, no side/top padding */
-    color: var(--color-text-primary); /* Brighter text for better contrast without individual backgrounds */
-    font-size: clamp(1rem, 2.3vw, 1.15rem); /* Adjust font size as needed */
+    /* Heredar estilos de contenido flotante del p general MÁS TRANSPARENTE */
+    margin-bottom: 1.5rem;
+    background: rgba(0, 0, 0, 0.15); /* Reducido de 0.3 a 0.15 */
+    border: 1px solid rgba(255, 255, 255, 0.05); /* Reducido de 0.1 a 0.05 */
+    backdrop-filter: blur(10px);
+    padding: 2rem;
+    color: var(--color-text-primary);
+    font-size: clamp(1rem, 2.3vw, 1.15rem);
     line-height: 1.7;
-    /* Override general 'p' hover effects if they feel too heavy for this section */
-    box-shadow: none; /* Remove glow on hover if inherited from general p */
-    transform: none; /* Remove scale on hover if inherited */
-    transition: none; /* Remove transition if hover effects are disabled */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); /* Reducido de 0.3 a 0.2 */
+    transition: var(--transition-smooth);
 }
 
-/* Optional: If you want a very subtle separator or just rely on spacing */
 #about .about-content p:last-child {
-    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+@media (hover: hover) {
+    #about .about-content p:hover {
+        transform: translateZ(0) scale(1.02);
+        background: rgba(0, 0, 0, 0.25); /* Reducido de 0.4 a 0.25 */
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), var(--glow-soft);
+        border-color: rgba(255, 255, 255, 0.1); /* Reducido de 0.2 a 0.1 */
+    }
 }
 
 /* ========================================
@@ -509,14 +548,10 @@ footer .copyright {
     max-width: none; /* Allow it to take full width if needed */
 }
 
-/* Ensure footer itself has some basic styling if not already fully covered */
+/* Ensure footer itself has floating content styling */
 footer {
-    /* The existing footer rule from line 177 will provide base styles */
-    /* We can add overrides or more specific styles here if needed */
-    /* For now, let's ensure the background and border are consistent with the new vision */
-    background: rgba(5, 8, 22, 0.8); /* Darker, more distinct footer background */
-    border-top: 1px solid var(--color-accent1_translucent, rgba(0, 246, 255, 0.2));
-    padding: 2rem 1rem; /* Responsive padding */
+    /* The updated footer rule now provides floating content styling */
+    /* Consistent with the new vision of floating content over infinite background */
 }
 
 /* ========================================
@@ -524,7 +559,7 @@ footer {
    ======================================== */
 
 .hero-orb-container {
-    margin-bottom: 3rem;
+    margin-bottom: 1.5rem; /* Reducido de 3rem a 1.5rem */
     perspective: 1000px;
 }
 
@@ -532,7 +567,7 @@ footer {
     width: clamp(120px, 25vw, 200px);
     height: clamp(120px, 25vw, 200px);
     
-    /* Gradiente cónico optimizado */
+    /* Gradiente cónico ESTÁTICO durante scroll */
     background: conic-gradient(
         from 0deg,
         var(--color-accent1),
@@ -546,14 +581,35 @@ footer {
     border: 3px solid rgba(255, 255, 255, 0.2);
     box-shadow: var(--glow-intense);
     
-    /* Performance critical */
+    /* Performance optimizado */
     transform-style: preserve-3d;
+    will-change: auto; /* Cambiar de transform a auto */
     
     /* Posición relativa para pseudo-elementos */
     position: relative;
 }
 
-/* Efecto de halo */
+/* Animaciones solo en hover para evitar interferencia con scroll */
+@media (hover: hover) {
+    .hero-orb:hover {
+        animation: orbRotate 4s linear infinite;
+    }
+    
+    .hero-orb:hover::before {
+        animation: orbHalo 6s linear infinite;
+    }
+    
+    .hero-orb:hover::after {
+        animation: orbCore 3s ease-in-out infinite;
+    }
+}
+
+@keyframes orbRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Efecto de halo - Animación MUY suave */
 .hero-orb::before {
     content: '';
     position: absolute;
@@ -565,24 +621,24 @@ footer {
     background: conic-gradient(
         from 0deg,
         transparent,
-        rgba(0, 246, 255, 0.5),
+        rgba(0, 246, 255, 0.3), /* Más sutil */
         transparent,
-        rgba(255, 0, 224, 0.5),
+        rgba(255, 0, 224, 0.3), /* Más sutil */
         transparent
     );
     
     border-radius: 50%;
     z-index: -1;
     
-    /* Animación continua */
-    animation: orbHalo 6s linear infinite;
+    /* Animación MUY lenta para no interferir con scroll */
+    animation: orbHalo 8s linear infinite;
     
     /* Performance */
-    will-change: transform, opacity;
+    will-change: transform;
     transform: translateZ(0);
 }
 
-/* Núcleo interno del orbe */
+/* Núcleo interno del orbe - Animación MUY suave */
 .hero-orb::after {
     content: '';
     position: absolute;
@@ -593,16 +649,16 @@ footer {
     
     background: radial-gradient(
         circle,
-        rgba(255, 255, 255, 0.8) 0%,
-        rgba(255, 255, 255, 0.4) 40%,
+        rgba(255, 255, 255, 0.6) 0%, /* Más sutil */
+        rgba(255, 255, 255, 0.3) 40%, /* Más sutil */
         transparent 70%
     );
     
     border-radius: 50%;
     transform: translate(-50%, -50%);
     
-    /* Animación de pulsación */
-    animation: orbCore 3s ease-in-out infinite;
+    /* Animación MUY lenta */
+    animation: orbCore 4s ease-in-out infinite;
     
     /* Performance */
     will-change: transform, opacity;
@@ -643,26 +699,25 @@ footer {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: clamp(30px, 8vw, 60px);
-    margin-bottom: 2rem;
-    padding: 2rem;
-    min-height: 200px;
+    gap: clamp(20px, 6vw, 40px); /* Reducido el gap */
+    margin-bottom: 1rem; /* Reducido de 2rem a 1rem */
+    padding: 1rem; /* Reducido de 2rem a 1rem */
+    min-height: 150px; /* Reducido de 200px a 150px */
     
-    /* Contenedor glassmorphism */
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: var(--border-radius);
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: var(--blur-heavy);
+    /* SIN FONDO - Solo contenido */
+    background: none;
+    border: none;
+    backdrop-filter: none;
     
     position: relative;
-    overflow: hidden;
+    overflow: visible;
     
     /* Performance */
     will-change: transform;
     transform: translateZ(0);
 }
 
-/* Efecto de escaneo */
+/* Efecto de escaneo - Solo para las animaciones internas */
 .neural-network-animation::before {
     content: '';
     position: absolute;
@@ -674,12 +729,12 @@ footer {
     background: linear-gradient(
         90deg,
         transparent,
-        rgba(0, 246, 255, 0.2),
+        rgba(0, 246, 255, 0.1), /* Más sutil */
         transparent
     );
     
-    /* Animación de escaneo */
-    animation: neuralScan 4s ease-in-out infinite;
+    /* Animación suave que no interfiera con scroll */
+    animation: neuralScan 6s ease-in-out infinite;
     
     /* Performance */
     will-change: transform;
@@ -730,7 +785,7 @@ footer {
     transform-style: preserve-3d;
 }
 
-/* Efecto de pulso en los nodos */
+/* Efecto de pulso en los nodos - Suave para no interferir con scroll */
 .nn-node::before {
     content: '';
     position: absolute;
@@ -742,7 +797,7 @@ footer {
     background: radial-gradient(
         circle,
         transparent 40%,
-        rgba(0, 246, 255, 0.3) 45%,
+        rgba(0, 246, 255, 0.2) 45%, /* Más sutil */
         transparent 50%
     );
     
@@ -750,8 +805,8 @@ footer {
     transform: translate(-50%, -50%);
     z-index: -1;
     
-    /* Animación de pulso */
-    animation: nodePulse 2s ease-in-out infinite;
+    /* Animación suave */
+    animation: nodePulse 3s ease-in-out infinite;
     
     /* Performance */
     will-change: transform, opacity;
@@ -812,18 +867,17 @@ footer {
 
 .data-flow-animation {
     position: relative;
-    width: 90%;
-    max-width: 600px; /* Increased for better channel visibility */
-    height: clamp(250px, 40vw, 400px); /* Increased height */
-    margin-bottom: 2rem;
+    width: 95%;
+    max-width: 800px; /* Aumentado para mayor espacio */
+    height: clamp(400px, 50vw, 600px); /* Aumentado significativamente */
+    margin: 2rem auto; /* Centrado con más espacio */
     
-    /* Contenedor glassmorphism */
-    background: rgba(0, 0, 0, 0.6);
-    border-radius: var(--border-radius);
-    border: 2px solid rgba(0, 246, 255, 0.3);
-    backdrop-filter: var(--blur-light);
+    /* SIN FONDO - Solo contenido */
+    background: none;
+    border: none;
+    backdrop-filter: none;
     
-    overflow: hidden;
+    overflow: visible;
     
     /* Performance */
     will-change: transform;
@@ -839,9 +893,16 @@ footer {
 
 /* Data channels (pipes) */
 .data-channel {
-    filter: drop-shadow(0 0 4px currentColor);
+    filter: drop-shadow(0 0 6px currentColor);
     stroke-linecap: round;
     stroke-linejoin: round;
+    opacity: 0.8;
+    transition: all 0.3s ease;
+}
+
+.data-channel:hover {
+    opacity: 1;
+    filter: drop-shadow(0 0 12px currentColor);
 }
 
 /* Enhanced channel types */
@@ -862,23 +923,23 @@ footer {
 }
 
 @keyframes primaryPulse {
-    0%, 100% { filter: drop-shadow(0 0 4px #00f6ff); }
-    50% { filter: drop-shadow(0 0 12px #00f6ff); }
+    0%, 100% { filter: drop-shadow(0 0 6px #00f6ff) drop-shadow(0 0 12px #00f6ff88); }
+    50% { filter: drop-shadow(0 0 16px #00f6ff) drop-shadow(0 0 24px #00f6ff88); }
 }
 
 @keyframes secondaryPulse {
-    0%, 100% { filter: drop-shadow(0 0 4px #ff00e0); }
-    50% { filter: drop-shadow(0 0 12px #ff00e0); }
+    0%, 100% { filter: drop-shadow(0 0 6px #ff00e0) drop-shadow(0 0 12px #ff00e088); }
+    50% { filter: drop-shadow(0 0 16px #ff00e0) drop-shadow(0 0 24px #ff00e088); }
 }
 
 @keyframes tertiaryPulse {
-    0%, 100% { filter: drop-shadow(0 0 4px #00ff88); }
-    50% { filter: drop-shadow(0 0 12px #00ff88); }
+    0%, 100% { filter: drop-shadow(0 0 6px #00ff88) drop-shadow(0 0 12px #00ff8888); }
+    50% { filter: drop-shadow(0 0 16px #00ff88) drop-shadow(0 0 24px #00ff8888); }
 }
 
 @keyframes controlPulse {
-    0%, 100% { filter: drop-shadow(0 0 4px #ffaa00); }
-    50% { filter: drop-shadow(0 0 12px #ffaa00); }
+    0%, 100% { filter: drop-shadow(0 0 6px #ffaa00) drop-shadow(0 0 12px #ffaa0088); }
+    50% { filter: drop-shadow(0 0 16px #ffaa00) drop-shadow(0 0 24px #ffaa0088); }
 }
 
 /* Data packets with protocol-specific styling */
@@ -896,6 +957,81 @@ footer {
 
 .data-packet-http {
     filter: drop-shadow(0 0 8px #ffaa00);
+}
+
+/* Partículas de flujo adicionales - MEJORADAS */
+.flow-particle {
+    position: absolute;
+    width: 8px; /* Aumentado */
+    height: 8px; /* Aumentado */
+    background: radial-gradient(circle, #00f6ff 0%, transparent 70%);
+    border-radius: 50%;
+    opacity: 0;
+    pointer-events: none;
+    will-change: transform, opacity;
+    filter: drop-shadow(0 0 8px #00f6ff);
+}
+
+.flow-particle:nth-child(1) {
+    animation: flowParticle1 6s infinite linear; /* Más rápido */
+    animation-delay: 0s;
+}
+
+.flow-particle:nth-child(2) {
+    animation: flowParticle2 8s infinite linear; /* Más rápido */
+    animation-delay: 2s;
+    background: radial-gradient(circle, #ff00e0 0%, transparent 70%);
+}
+
+.flow-particle:nth-child(3) {
+    animation: flowParticle3 10s infinite linear;
+    animation-delay: 4s;
+    background: radial-gradient(circle, #00ff88 0%, transparent 70%);
+}
+
+@keyframes flowParticle1 {
+    0%, 100% { 
+        transform: translate(10%, 30%) scale(0); 
+        opacity: 0; 
+    }
+    10%, 90% { 
+        transform: translate(20%, 25%) scale(1); 
+        opacity: 0.8; 
+    }
+    50% { 
+        transform: translate(80%, 70%) scale(1.2); 
+        opacity: 1; 
+    }
+}
+
+@keyframes flowParticle2 {
+    0%, 100% { 
+        transform: translate(5%, 60%) scale(0); 
+        opacity: 0; 
+    }
+    15%, 85% { 
+        transform: translate(15%, 55%) scale(1); 
+        opacity: 0.7; 
+    }
+    50% { 
+        transform: translate(85%, 40%) scale(1.1); 
+        opacity: 0.9; 
+    }
+}
+
+@keyframes flowParticle3 {
+    0%, 100% { 
+        transform: translate(15%, 80%) scale(0); 
+        opacity: 0; 
+    }
+    20%, 80% { 
+        transform: translate(25%, 75%) scale(1); 
+        opacity: 0.6; 
+    }
+    50% { 
+        transform: translate(75%, 20%) scale(1.3); 
+        opacity: 0.8; 
+    }
 }
 
 /* Network nodes with enhanced styling */
@@ -974,9 +1110,9 @@ footer {
 
 .closing-animation-container {
     position: relative;
-    width: clamp(250px, 45vw, 400px);
-    height: clamp(250px, 45vw, 400px);
-    margin: 2rem auto;
+    width: clamp(200px, 35vw, 300px); /* Reducido tamaño */
+    height: clamp(200px, 35vw, 300px);
+    margin: 1rem auto; /* Reducido de 2rem a 1rem */
     
     /* Contenedor con efecto de agujero negro más visible */
     background: radial-gradient(
@@ -1007,7 +1143,6 @@ footer {
     /* Animación de pulso gravitacional más dramático */
     animation: dramaticGravitationalPulse 6s ease-in-out infinite;
 }
-}
 
 @keyframes dramaticGravitationalPulse {
     0%, 100% { 
@@ -1034,7 +1169,6 @@ footer {
         transform: translateZ(0) scale(1.01) rotate(-1deg);
         filter: brightness(0.7) contrast(1.5) hue-rotate(5deg);
     }
-}
 }
 
 /* Eliminar el disco de acreción exterior para evitar el segundo círculo */

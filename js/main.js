@@ -85,8 +85,12 @@ const startApp = () => {
     const initializeWithGsap = () => {
         if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
             try {
-                // No intentar registrar CSSPlugin explícitamente, ya viene incluido en el core de GSAP
+                // Registrar plugins disponibles
                 gsap.registerPlugin(ScrollTrigger);
+                if (typeof MotionPathPlugin !== 'undefined') {
+                    gsap.registerPlugin(MotionPathPlugin);
+                    console.log('MotionPathPlugin registrado correctamente');
+                }
                 AnimationSystem.init(); // Initialize animations now that GSAP is ready
             } catch (error) {
                 console.error('Error al inicializar GSAP o AnimationSystem (Modular):', error);
@@ -115,13 +119,26 @@ const startApp = () => {
                 return;
             }
             
-            // Cargar todos los plugins necesarios en un solo lugar
+            // Cargar ScrollTrigger
             const stScript = document.createElement('script');
             stScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js';
             stScript.async = true;
             stScript.onload = () => {
                 console.log('ScrollTrigger cargado.');
-                initializeWithGsap();
+                
+                // Cargar MotionPathPlugin
+                const mpScript = document.createElement('script');
+                mpScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/MotionPathPlugin.min.js';
+                mpScript.async = true;
+                mpScript.onload = () => {
+                    console.log('MotionPathPlugin cargado.');
+                    initializeWithGsap();
+                };
+                mpScript.onerror = () => {
+                    console.warn('MotionPathPlugin falló al cargar, continuando sin él.');
+                    initializeWithGsap();
+                };
+                document.head.appendChild(mpScript);
             };
             stScript.onerror = () => {
                 console.error('Error cargando ScrollTrigger. Usando fallbacks.');
