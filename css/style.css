@@ -145,13 +145,13 @@ html, body {
 /* Secciones con layout estable para evitar saltos */
 section {
     position: relative;
-    min-height: 90vh;
-    min-height: 90dvh;
+    min-height: 80vh;
+    min-height: 80dvh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 4rem 2rem 6rem 2rem;
+    padding: 3rem 1.5rem 4rem 1.5rem;
     transform-style: preserve-3d;
     will-change: auto; /* Sin will-change que cause problemas */
     backface-visibility: hidden;
@@ -169,25 +169,30 @@ section {
     
     /* Performance optimizado */
     transform: translateZ(0);
+    
+    /* Transición suave para cambios de tamaño */
+    transition: min-height 0.3s ease, padding 0.3s ease;
 }
 
 /* Secciones específicas con alturas diferentes para ritmo visual */
 #about {
-    min-height: 85vh; /* Aumentado para contenido denso */
-    min-height: 85dvh;
-    padding: 4rem 2rem 5rem 2rem; /* Más espacio para múltiples párrafos */
+    min-height: 70vh; /* Altura reducida para mejor flujo */
+    min-height: 70dvh;
+    padding: 2.5rem 1.5rem 3.5rem 1.5rem;
 }
 
 #contact {
-    min-height: 50vh; /* Sección más compacta */
-    min-height: 50dvh;
-    padding: 2rem 2rem 3rem 2rem;
+    min-height: 60vh; /* Aumentado ligeramente */
+    min-height: 60dvh;
+    padding: 2.5rem 1.5rem 3.5rem 1.5rem;
 }
 
+#concept1,
+#concept2,
 #closing {
-    min-height: 80vh; /* Intermedio */
-    min-height: 80dvh;
-    padding: 3rem 2rem 4rem 2rem;
+    min-height: 75vh;
+    min-height: 75dvh;
+    padding: 2.5rem 1.5rem 3.5rem 1.5rem;
 }
 
 /* Efecto hover removido para fondo infinito */
@@ -1321,6 +1326,25 @@ footer {
    ======================================== */
 
 @media (max-width: 768px) {
+    /* Ajustar el tamaño del contenedor de la animación de flujo de datos */
+    .data-flow-animation {
+        height: 60vh !important;
+        min-height: 400px;
+        margin: 1.5rem 0;
+    }
+    
+    /* Ajustar espaciado entre secciones en móviles */
+    section {
+        padding: 2rem 1rem 3rem 1rem;
+        min-height: 75vh;
+        min-height: 75dvh;
+    }
+    
+    #about, #contact, #concept1, #concept2, #closing {
+        min-height: 65vh;
+        min-height: 65dvh;
+        padding: 2rem 1rem 3rem 1rem;
+    }
     /* Reducir efectos en móvil para mejor performance */
     :root {
         --glow-soft: 0 0 5px currentColor;
@@ -1357,6 +1381,23 @@ footer {
 }
 
 @media (max-width: 480px) {
+    /* Ajustes adicionales para móviles pequeños */
+    .data-flow-animation {
+        height: 55vh !important;
+        min-height: 350px;
+        margin: 1rem 0;
+    }
+    
+    section {
+        min-height: 70vh;
+        min-height: 70dvh;
+        padding: 1.5rem 0.75rem 2.5rem 0.75rem;
+    }
+    
+    #about, #contact, #concept1, #concept2, #closing {
+        min-height: 60vh;
+        min-height: 60dvh;
+    }
     header, section {
         padding: 1rem;
     }

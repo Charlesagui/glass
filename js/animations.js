@@ -167,7 +167,9 @@ export const AnimationSystem = {
         const svg = document.createElementNS(svgNS, 'svg');
         svg.setAttribute('width', '100%');
         svg.setAttribute('height', '100%');
-        svg.setAttribute('viewBox', '0 0 800 600'); // Aumentado para mayor espacio
+        // Ajustar viewBox para móviles (más grande) o escritorio
+        const isMobile = window.innerWidth <= 768;
+        svg.setAttribute('viewBox', isMobile ? '0 0 800 800' : '0 0 800 600');
         svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
         container.appendChild(svg);
 
