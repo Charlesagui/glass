@@ -524,22 +524,20 @@ export const AnimationSystem = {
         });
         defs.appendChild(blackHoleGradient);
         
-        // Portal principal (singularidad) - más brillante y dinámico
-        const portal = document.createElementNS(svgNS, 'circle');
-        portal.setAttribute('cx', '200');
-        portal.setAttribute('cy', '200');
-        portal.setAttribute('r', '70');
-        portal.setAttribute('fill', 'url(#blackHoleGradient)');
-        portal.setAttribute('opacity', '0.98');
-        portal.setAttribute('filter', 'url(#glow)');
-        svg.appendChild(portal);
+        // EFECTOS DE LUZ MEJORADOS - Múltiples filtros
         
-        // Añadir filtro de brillo
-        const filter = document.createElementNS(svgNS, 'filter');
-        filter.setAttribute('id', 'glow');
+        // Filtro de brillo principal con múltiples capas
+        const glowFilter = document.createElementNS(svgNS, 'filter');
+        glowFilter.setAttribute('id', 'glow');
+        glowFilter.setAttribute('x', '-50%');
+        glowFilter.setAttribute('y', '-50%');
+        glowFilter.setAttribute('width', '200%');
+        glowFilter.setAttribute('height', '200%');
+        
         const feGaussianBlur = document.createElementNS(svgNS, 'feGaussianBlur');
-        feGaussianBlur.setAttribute('stdDeviation', '5');
+        feGaussianBlur.setAttribute('stdDeviation', '8');
         feGaussianBlur.setAttribute('result', 'coloredBlur');
+        
         const feMerge = document.createElementNS(svgNS, 'feMerge');
         const feMergeNode1 = document.createElementNS(svgNS, 'feMergeNode');
         feMergeNode1.setAttribute('in', 'coloredBlur');
@@ -547,9 +545,79 @@ export const AnimationSystem = {
         feMergeNode2.setAttribute('in', 'SourceGraphic');
         feMerge.appendChild(feMergeNode1);
         feMerge.appendChild(feMergeNode2);
-        filter.appendChild(feGaussianBlur);
-        filter.appendChild(feMerge);
-        defs.appendChild(filter);
+        glowFilter.appendChild(feGaussianBlur);
+        glowFilter.appendChild(feMerge);
+        defs.appendChild(glowFilter);
+        
+        // Filtro de halo intenso
+        const haloFilter = document.createElementNS(svgNS, 'filter');
+        haloFilter.setAttribute('id', 'halo');
+        haloFilter.setAttribute('x', '-100%');
+        haloFilter.setAttribute('y', '-100%');
+        haloFilter.setAttribute('width', '300%');
+        haloFilter.setAttribute('height', '300%');
+        
+        const feDropShadow1 = document.createElementNS(svgNS, 'feDropShadow');
+        feDropShadow1.setAttribute('dx', '0');
+        feDropShadow1.setAttribute('dy', '0');
+        feDropShadow1.setAttribute('stdDeviation', '15');
+        feDropShadow1.setAttribute('flood-color', '#00f6ff');
+        feDropShadow1.setAttribute('flood-opacity', '0.8');
+        
+        const feDropShadow2 = document.createElementNS(svgNS, 'feDropShadow');
+        feDropShadow2.setAttribute('dx', '0');
+        feDropShadow2.setAttribute('dy', '0');
+        feDropShadow2.setAttribute('stdDeviation', '25');
+        feDropShadow2.setAttribute('flood-color', '#ff00e0');
+        feDropShadow2.setAttribute('flood-opacity', '0.6');
+        
+        haloFilter.appendChild(feDropShadow1);
+        haloFilter.appendChild(feDropShadow2);
+        defs.appendChild(haloFilter);
+        
+        // Anillos de luz pulsante para dar más visibilidad
+        for (let i = 0; i < 5; i++) {
+            const lightRing = document.createElementNS(svgNS, 'circle');
+            lightRing.setAttribute('cx', '200');
+            lightRing.setAttribute('cy', '200');
+            lightRing.setAttribute('r', 80 + (i * 15));
+            lightRing.setAttribute('fill', 'none');
+            lightRing.setAttribute('stroke', i % 2 === 0 ? '#00f6ff' : '#ff00e0');
+            lightRing.setAttribute('stroke-width', '1');
+            lightRing.setAttribute('opacity', 0.3 - (i * 0.05));
+            lightRing.setAttribute('stroke-dasharray', '4,8');
+            lightRing.setAttribute('filter', 'url(#glow)');
+            svg.appendChild(lightRing);
+            
+            // Animación de pulsación
+            gsap.to(lightRing, {
+                opacity: 0.6 - (i * 0.05),
+                duration: 2 + (i * 0.3),
+                repeat: -1,
+                yoyo: true,
+                ease: 'sine.inOut',
+                delay: i * 0.4
+            });
+            
+            // Rotación
+            gsap.to(lightRing, {
+                rotation: 360,
+                duration: 15 + (i * 2),
+                repeat: -1,
+                ease: 'none',
+                transformOrigin: 'center'
+            });
+        }
+        
+        // Portal principal (singularidad) - más brillante y dinámico
+        const portal = document.createElementNS(svgNS, 'circle');
+        portal.setAttribute('cx', '200');
+        portal.setAttribute('cy', '200');
+        portal.setAttribute('r', '70');
+        portal.setAttribute('fill', 'url(#blackHoleGradient)');
+        portal.setAttribute('opacity', '0.98');
+        portal.setAttribute('filter', 'url(#halo)');
+        svg.appendChild(portal);
         
         // Horizonte de eventos - más visible y dinámico
         const eventHorizon = document.createElementNS(svgNS, 'circle');
@@ -558,23 +626,55 @@ export const AnimationSystem = {
         eventHorizon.setAttribute('r', '90');
         eventHorizon.setAttribute('fill', 'none');
         eventHorizon.setAttribute('stroke', '#5a5aff');
-        eventHorizon.setAttribute('stroke-width', '1.5');
+        eventHorizon.setAttribute('stroke-width', '2');
         eventHorizon.setAttribute('opacity', '0.8');
-        eventHorizon.setAttribute('stroke-dasharray', '6,3');
+        eventHorizon.setAttribute('stroke-dasharray', '8,4');
         eventHorizon.setAttribute('filter', 'url(#glow)');
         svg.appendChild(eventHorizon);
         
-        // Añadir anillo exterior de energía
+        // Añadir anillo exterior de energía más brillante
         const energyRing = document.createElementNS(svgNS, 'circle');
         energyRing.setAttribute('cx', '200');
         energyRing.setAttribute('cy', '200');
         energyRing.setAttribute('r', '120');
         energyRing.setAttribute('fill', 'none');
         energyRing.setAttribute('stroke', '#00ffff');
-        energyRing.setAttribute('stroke-width', '0.5');
-        energyRing.setAttribute('opacity', '0.5');
-        energyRing.setAttribute('stroke-dasharray', '3,2');
+        energyRing.setAttribute('stroke-width', '1.5');
+        energyRing.setAttribute('opacity', '0.7');
+        energyRing.setAttribute('stroke-dasharray', '5,3');
+        energyRing.setAttribute('filter', 'url(#glow)');
         svg.appendChild(energyRing);
+        
+        // Rayos de luz emanando del agujero negro
+        for (let i = 0; i < 8; i++) {
+            const angle = (i / 8) * Math.PI * 2;
+            const x1 = 200 + Math.cos(angle) * 90;
+            const y1 = 200 + Math.sin(angle) * 90;
+            const x2 = 200 + Math.cos(angle) * 160;
+            const y2 = 200 + Math.sin(angle) * 160;
+            
+            const lightRay = document.createElementNS(svgNS, 'line');
+            lightRay.setAttribute('x1', x1);
+            lightRay.setAttribute('y1', y1);
+            lightRay.setAttribute('x2', x2);
+            lightRay.setAttribute('y2', y2);
+            lightRay.setAttribute('stroke', i % 3 === 0 ? '#00f6ff' : i % 3 === 1 ? '#ff00e0' : '#00ff88');
+            lightRay.setAttribute('stroke-width', '2');
+            lightRay.setAttribute('opacity', '0');
+            lightRay.setAttribute('stroke-linecap', 'round');
+            lightRay.setAttribute('filter', 'url(#glow)');
+            svg.appendChild(lightRay);
+            
+            // Animación de destello intermitente
+            gsap.to(lightRay, {
+                opacity: 0.8,
+                duration: 0.3,
+                delay: i * 0.2,
+                repeat: -1,
+                repeatDelay: 3 + Math.random() * 2,
+                ease: 'power2.out'
+            });
+        }
         
         // Animaciones del agujero negro - más dinámicas y visibles
         gsap.to(portal, {
@@ -640,20 +740,21 @@ export const AnimationSystem = {
 
     createQuantumParticles(svg) {
         const svgNS = 'http://www.w3.org/2000/svg';
-        const particleCount = 80; // Más partículas
+        const particleCount = 100; // Aumentamos las partículas
         
         for (let i = 0; i < particleCount; i++) {
             const particle = document.createElementNS(svgNS, 'circle');
-            const size = 1 + Math.random() * 3;
+            const size = 2 + Math.random() * 4; // Partículas más grandes
             
             particle.setAttribute('r', size);
             particle.setAttribute('fill', this.getBlackHoleColor());
-            particle.setAttribute('opacity', '0.6');
+            particle.setAttribute('opacity', '0.8'); // Más opacas
+            particle.setAttribute('filter', 'url(#glow)'); // Agregar brillo
             svg.appendChild(particle);
             
             // Posición inicial en órbitas distantes más variadas
             const angle = (i / particleCount) * Math.PI * 2 + Math.random() * 0.5;
-            const distance = 150 + Math.random() * 100;
+            const distance = 150 + Math.random() * 120; // Mayor variedad de distancias
             const startX = 200 + Math.cos(angle) * distance;
             const startY = 200 + Math.sin(angle) * distance;
             
@@ -673,7 +774,7 @@ export const AnimationSystem = {
                 const spiralDistance = distance * (1 - progress * 0.95);
                 
                 // Agregar turbulencia y perturbaciones
-                const turbulence = (Math.sin(progress * Math.PI * 8) * 10) * (1 - progress);
+                const turbulence = (Math.sin(progress * Math.PI * 8) * 15) * (1 - progress);
                 const spiralX = 200 + Math.cos(spiralAngle) * (spiralDistance + turbulence);
                 const spiralY = 200 + Math.sin(spiralAngle) * (spiralDistance + turbulence);
                 spiralPoints.push(`${spiralX} ${spiralY}`);
@@ -691,42 +792,49 @@ export const AnimationSystem = {
                 duration: 3 + Math.random() * 4,
                 ease: 'power2.in',
                 onUpdate: function() {
-                    // Efecto de aceleración cerca del horizonte de eventos
+                    // Efecto de aceleración cerca del horizonte de eventos con brillo
                     const currentX = parseFloat(particle.getAttribute('cx') || gsap.getProperty(particle, 'x'));
                     const currentY = parseFloat(particle.getAttribute('cy') || gsap.getProperty(particle, 'y'));
                     const distanceToCenter = Math.sqrt((currentX - 200) ** 2 + (currentY - 200) ** 2);
                     
                     if (distanceToCenter < 100) {
-                        gsap.set(particle, { filter: `blur(${(100 - distanceToCenter) * 0.05}px)` });
+                        // Crear trail de luz cuando se acerca al agujero negro
+                        const intensity = (100 - distanceToCenter) / 100;
+                        gsap.set(particle, { 
+                            filter: `url(#glow) drop-shadow(0 0 ${intensity * 10}px ${this.getBlackHoleColor()})`,
+                            opacity: 0.8 + (intensity * 0.2)
+                        });
                     }
                 },
                 onComplete: () => {
-                    // Regenerar partícula con variaciones
+                    // Regenerar partícula con variaciones y efectos de luz
                     gsap.set(particle, { 
                         x: startX + (Math.random() - 0.5) * 20, 
                         y: startY + (Math.random() - 0.5) * 20, 
                         scale: 1, 
-                        opacity: 0.6,
-                        filter: 'none',
+                        opacity: 0.8,
+                        filter: 'url(#glow)',
                         fill: this.getBlackHoleColor()
                     });
                 }
             });
             
-            // Efecto de spaghettification más dramático
+            // Efecto de spaghettification más dramático con brillo
             tl.to(particle, {
                 scaleY: 0.1,
-                scaleX: 3,
+                scaleX: 4,
                 rotation: Math.random() * 360,
+                filter: `url(#glow) drop-shadow(0 0 15px ${this.getBlackHoleColor()})`,
                 duration: 0.8,
                 ease: 'power3.in'
             }, '-=0.8');
             
-            // Parpadeo antes de desaparecer
+            // Parpadeo intenso antes de desaparecer
             tl.to(particle, {
-                opacity: 0.9,
-                duration: 0.1,
-                repeat: 3,
+                opacity: 1,
+                scale: size * 2,
+                duration: 0.05,
+                repeat: 6,
                 yoyo: true,
                 ease: 'power2.inOut'
             }, '-=0.3');
@@ -736,34 +844,65 @@ export const AnimationSystem = {
     createEnergyWaves(svg) {
         const svgNS = 'http://www.w3.org/2000/svg';
         
-        // Ondas gravitacionales ultra oscuras y sutiles
-        for (let i = 0; i < 3; i++) {
+        // Ondas gravitacionales más visibles y espectaculares
+        for (let i = 0; i < 5; i++) { // Más ondas
             const wave = document.createElementNS(svgNS, 'circle');
             wave.setAttribute('cx', '200');
             wave.setAttribute('cy', '200');
             wave.setAttribute('r', '0');
             wave.setAttribute('fill', 'none');
-            wave.setAttribute('stroke', '#1a1a1a');
-            wave.setAttribute('stroke-width', '0.5');
+            wave.setAttribute('stroke', i % 2 === 0 ? '#00f6ff' : '#ff00e0'); // Colores alternos vibrantes
+            wave.setAttribute('stroke-width', '1.5');
             wave.setAttribute('opacity', '0');
+            wave.setAttribute('filter', 'url(#glow)');
             svg.appendChild(wave);
             
-            const tl = gsap.timeline({ repeat: -1, delay: i * 3 });
+            const tl = gsap.timeline({ repeat: -1, delay: i * 2 });
             
             tl.to(wave, {
-                r: 120,
-                opacity: 0.2,
-                strokeWidth: 0.3,
-                duration: 1.5,
+                r: 100,
+                opacity: 0.6,
+                strokeWidth: 2,
+                duration: 1,
                 ease: 'power1.out'
             })
             .to(wave, {
-                r: 180,
+                r: 200,
                 opacity: 0,
-                strokeWidth: 0.1,
-                duration: 2.5,
+                strokeWidth: 0.5,
+                duration: 3,
                 ease: 'power1.in'
-            }, '-=0.8');
+            }, '-=0.5');
+        }
+        
+        // Añadir pulsos de energía radiales más intensos
+        for (let i = 0; i < 8; i++) {
+            const energyPulse = document.createElementNS(svgNS, 'circle');
+            energyPulse.setAttribute('cx', '200');
+            energyPulse.setAttribute('cy', '200');
+            energyPulse.setAttribute('r', '0');
+            energyPulse.setAttribute('fill', 'none');
+            energyPulse.setAttribute('stroke', this.getBlackHoleColor());
+            energyPulse.setAttribute('stroke-width', '0.8');
+            energyPulse.setAttribute('opacity', '0');
+            energyPulse.setAttribute('stroke-dasharray', '3,2');
+            energyPulse.setAttribute('filter', 'url(#glow)');
+            svg.appendChild(energyPulse);
+            
+            const pulseTl = gsap.timeline({ repeat: -1, delay: i * 0.5 });
+            
+            pulseTl.to(energyPulse, {
+                r: 80 + Math.random() * 40,
+                opacity: 0.4,
+                duration: 0.8,
+                ease: 'power2.out'
+            })
+            .to(energyPulse, {
+                r: 150,
+                opacity: 0,
+                duration: 1.2,
+                ease: 'power2.in'
+            }, '-=0.3');
         }
     },
 
@@ -807,12 +946,16 @@ export const AnimationSystem = {
     },
 
     getBlackHoleColor() {
-        // Colores más vibrantes para las partículas
+        // Colores más vibrantes y brillantes para las partículas
         const particleColors = [
-            '#5a5aff', '#7a7aff', '#9a9aff', // Azules
-            '#00ffff', '#40e0d0', '#20b2aa', // Cian
-            '#9370db', '#8a2be2', // Púrpuras
-            '#ff69b4' // Rosa
+            '#00f6ff', '#40e0ff', '#60e8ff', // Cian brillante
+            '#ff00e0', '#ff40e8', '#ff60ec', // Magenta brillante  
+            '#00ff88', '#40ff9a', '#60ffac', // Verde brillante
+            '#5a5aff', '#7a7aff', '#9a9aff', // Azul brillante
+            '#ffff00', '#ffff40', '#ffff60', // Amarillo brillante
+            '#ff4400', '#ff6620', '#ff8840', // Naranja brillante
+            '#9370db', '#a580e2', '#b790e9', // Púrpura brillante
+            '#ff69b4', '#ff79c4', '#ff89d4'  // Rosa brillante
         ];
         return particleColors[Math.floor(Math.random() * particleColors.length)];
     },
@@ -820,7 +963,7 @@ export const AnimationSystem = {
     createAccretionDisk(svg) {
         const svgNS = 'http://www.w3.org/2000/svg';
         
-        // Crear gradiente para el disco de acreción
+        // Crear gradiente para el disco de acreción más brillante
         const diskGradient = document.createElementNS(svgNS, 'radialGradient');
         diskGradient.setAttribute('id', 'accretionGradient');
         diskGradient.setAttribute('cx', '0');
@@ -829,10 +972,12 @@ export const AnimationSystem = {
         diskGradient.setAttribute('gradientTransform', 'rotate(90)');
         
         const gradientStops = [
-            { offset: '0%', color: '#5a5aff', opacity: '0.8' },
-            { offset: '30%', color: '#00ffff', opacity: '0.6' },
-            { offset: '70%', color: '#ff69b4', opacity: '0.4' },
-            { offset: '100%', color: '#9370db', opacity: '0.1' }
+            { offset: '0%', color: '#ffff00', opacity: '0.9' }, // Amarillo brillante en el centro
+            { offset: '20%', color: '#ff4400', opacity: '0.8' }, // Naranja intenso
+            { offset: '40%', color: '#ff00e0', opacity: '0.7' }, // Magenta vibrante
+            { offset: '60%', color: '#5a5aff', opacity: '0.6' }, // Azul brillante
+            { offset: '80%', color: '#00f6ff', opacity: '0.5' }, // Cian luminoso
+            { offset: '100%', color: '#9370db', opacity: '0.3' } // Púrpura exterior
         ];
         
         gradientStops.forEach(stop => {
@@ -847,27 +992,28 @@ export const AnimationSystem = {
         defs.appendChild(diskGradient);
         
         // Crear múltiples anillos del disco de acreción con colores más vibrantes
-        for (let i = 0; i < 8; i++) {
+        for (let i = 0; i < 12; i++) { // Más anillos para mejor efecto
             const ring = document.createElementNS(svgNS, 'ellipse');
-            const radius = 120 + (i * 10);
-            const rotation = i * 15;
+            const radius = 120 + (i * 8);
+            const rotation = i * 12;
             
             ring.setAttribute('cx', '200');
             ring.setAttribute('cy', '200');
             ring.setAttribute('rx', radius);
-            ring.setAttribute('ry', radius * 0.3);
+            ring.setAttribute('ry', radius * 0.25); // Más aplanado para efecto realista
             ring.setAttribute('fill', 'none');
             ring.setAttribute('stroke', `url(#accretionGradient)`);
-            ring.setAttribute('stroke-width', '1.5');
-            ring.setAttribute('opacity', '0.6');
-            ring.setAttribute('stroke-dasharray', `${10 + i * 2},${5 + i}`);
+            ring.setAttribute('stroke-width', '2.5'); // Más grueso para mayor visibilidad
+            ring.setAttribute('opacity', '0.8'); // Más opaco
+            ring.setAttribute('stroke-dasharray', `${8 + i * 2},${3 + i}`);
             ring.setAttribute('transform', `rotate(${rotation} 200 200)`);
+            ring.setAttribute('filter', 'url(#glow)'); // Añadir brillo
             svg.appendChild(ring);
             
             // Rotación diferencial con diferentes velocidades
             gsap.to(ring, {
                 rotation: 360 + rotation,
-                duration: 20 + (i * 3),
+                duration: 15 + (i * 2), // Más rápido para mayor dinamismo
                 repeat: -1,
                 ease: 'none',
                 transformOrigin: 'center',
@@ -876,13 +1022,61 @@ export const AnimationSystem = {
             
             // Fluctuaciones de brillo y tamaño más dinámicas
             gsap.to(ring, {
-                attr: { rx: radius * 1.1, ry: radius * 0.35 },
-                opacity: 0.8 - (i * 0.08),
-                duration: 3 + Math.random() * 2,
+                attr: { rx: radius * 1.15, ry: radius * 0.3 },
+                opacity: 0.9 - (i * 0.06),
+                strokeWidth: '3.5',
+                duration: 2 + Math.random() * 2,
                 repeat: -1,
                 yoyo: true,
                 ease: 'sine.inOut',
-                delay: Math.random() * 3
+                delay: Math.random() * 2
+            });
+            
+            // Efecto de parpadeo de energía
+            gsap.to(ring, {
+                filter: 'url(#glow) brightness(1.3)',
+                duration: 0.5,
+                repeat: -1,
+                repeatDelay: 3 + Math.random() * 4,
+                yoyo: true,
+                ease: 'power2.inOut'
+            });
+        }
+        
+        // Añadir partículas de materia caliente en el disco
+        for (let i = 0; i < 20; i++) {
+            const hotSpot = document.createElementNS(svgNS, 'circle');
+            const angle = (i / 20) * Math.PI * 2;
+            const distance = 130 + Math.random() * 80;
+            const x = 200 + Math.cos(angle) * distance;
+            const y = 200 + Math.sin(angle) * distance * 0.3; // Aplanado como el disco
+            
+            hotSpot.setAttribute('cx', x);
+            hotSpot.setAttribute('cy', y);
+            hotSpot.setAttribute('r', '3');
+            hotSpot.setAttribute('fill', this.getBlackHoleColor());
+            hotSpot.setAttribute('opacity', '0.9');
+            hotSpot.setAttribute('filter', 'url(#glow)');
+            svg.appendChild(hotSpot);
+            
+            // Órbita alrededor del agujero negro
+            gsap.to(hotSpot, {
+                rotation: 360,
+                duration: 20 + Math.random() * 10,
+                repeat: -1,
+                ease: 'none',
+                transformOrigin: '200px 200px'
+            });
+            
+            // Pulsación de intensidad
+            gsap.to(hotSpot, {
+                r: 5,
+                opacity: 1,
+                duration: 1 + Math.random(),
+                repeat: -1,
+                yoyo: true,
+                ease: 'sine.inOut',
+                delay: Math.random() * 2
             });
         }
     },
@@ -948,42 +1142,90 @@ export const AnimationSystem = {
     createJets(svg) {
         const svgNS = 'http://www.w3.org/2000/svg';
         
-        // Jets polares del agujero negro
+        // Jets polares del agujero negro más brillantes y visibles
         for (let jetIndex = 0; jetIndex < 2; jetIndex++) {
             const jetDirection = jetIndex === 0 ? -1 : 1; // Arriba y abajo
             
-            // Crear múltiples segmentos para cada jet
-            for (let i = 0; i < 6; i++) {
+            // Crear múltiples segmentos para cada jet con efectos de luz
+            for (let i = 0; i < 8; i++) { // Más segmentos
                 const jetSegment = document.createElementNS(svgNS, 'ellipse');
-                const yOffset = jetDirection * (80 + i * 20);
+                const yOffset = jetDirection * (70 + i * 18);
+                const intensity = 1 - (i * 0.1); // Disminuye la intensidad con la distancia
                 
                 jetSegment.setAttribute('cx', '200');
                 jetSegment.setAttribute('cy', 200 + yOffset);
-                jetSegment.setAttribute('rx', 8 - i);
-                jetSegment.setAttribute('ry', 15 + i * 3);
-                jetSegment.setAttribute('fill', `rgba(${20 + i * 5}, ${20 + i * 5}, ${20 + i * 5}, ${0.4 - i * 0.05})`);
-                jetSegment.setAttribute('opacity', '0.3');
+                jetSegment.setAttribute('rx', Math.max(2, 10 - i * 0.8));
+                jetSegment.setAttribute('ry', 18 + i * 4);
+                jetSegment.setAttribute('fill', `rgba(${100 + i * 15}, ${150 + i * 10}, ${255}, ${0.7 * intensity})`);
+                jetSegment.setAttribute('opacity', 0.6 * intensity);
+                jetSegment.setAttribute('filter', 'url(#glow)');
                 svg.appendChild(jetSegment);
                 
-                // Animación de pulso del jet
+                // Animación de pulso del jet más intensa
                 gsap.to(jetSegment, {
-                    scaleY: 1.3,
-                    opacity: 0.5,
-                    duration: 0.8 + Math.random() * 0.4,
+                    scaleY: 1.5,
+                    opacity: 0.8 * intensity,
+                    fill: `rgba(${150 + i * 10}, ${200 + i * 5}, ${255}, ${0.9 * intensity})`,
+                    duration: 0.6 + Math.random() * 0.4,
                     repeat: -1,
                     yoyo: true,
                     ease: 'power2.inOut',
-                    delay: i * 0.1
+                    delay: i * 0.08
                 });
                 
-                // Movimiento ondulatorio
+                // Movimiento ondulatorio más pronunciado
                 gsap.to(jetSegment, {
-                    x: 5,
-                    duration: 2 + Math.random(),
+                    x: 8 * intensity,
+                    duration: 1.5 + Math.random() * 0.5,
                     repeat: -1,
                     yoyo: true,
                     ease: 'sine.inOut',
                     delay: Math.random()
+                });
+                
+                // Efecto de destello periódico
+                gsap.to(jetSegment, {
+                    filter: 'url(#glow) brightness(1.5)',
+                    duration: 0.2,
+                    repeat: -1,
+                    repeatDelay: 2 + Math.random() * 3,
+                    ease: 'power2.out'
+                });
+            }
+            
+            // Añadir partículas de alta energía en los jets
+            for (let p = 0; p < 12; p++) {
+                const particle = document.createElementNS(svgNS, 'circle');
+                const startY = 200 + (jetDirection * 60);
+                const endY = 200 + (jetDirection * 180);
+                
+                particle.setAttribute('r', '2');
+                particle.setAttribute('fill', '#ffffff');
+                particle.setAttribute('opacity', '0.9');
+                particle.setAttribute('filter', 'url(#glow)');
+                svg.appendChild(particle);
+                
+                gsap.set(particle, { x: 200, y: startY });
+                
+                // Animación de partículas de alta energía
+                const particleTl = gsap.timeline({ repeat: -1, delay: p * 0.3 });
+                
+                particleTl.to(particle, {
+                    y: endY,
+                    x: 200 + (Math.random() - 0.5) * 20,
+                    scale: 0.3,
+                    opacity: 0,
+                    duration: 1.5,
+                    ease: 'power2.out',
+                    onComplete: () => {
+                        gsap.set(particle, { 
+                            x: 200, 
+                            y: startY, 
+                            scale: 1, 
+                            opacity: 0.9,
+                            fill: p % 2 === 0 ? '#ffffff' : '#00f6ff'
+                        });
+                    }
                 });
             }
         }
